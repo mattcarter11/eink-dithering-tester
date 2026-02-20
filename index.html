@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dither Algorithm Comparison</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+
+    <div id="mainContent">
+        <div id="leftPanel">
+            <h2>Dither Comparison</h2>
+            <div id="buttonGroup">
+                <button class="btn primary" onclick="document.getElementById('fileInput').click()">Load Images</button>
+                <button class="btn" onclick="showResults()">Show Results</button>
+            </div>
+            <div id="imageInfo"></div>
+            <h3>Images</h3>
+            <div id="imageList"></div>
+        </div>
+
+        <div id="middlePanel">
+            <p>Source Image</p>
+            <canvas id="sourceCanvas"></canvas>
+            <div id="votingButtonGroup">
+                <button class="btn" onclick="submitVote()">Submit Vote</button>
+                <button class="btn" onclick="clearVote()">Clear Vote</button>
+            </div>
+        </div>
+        
+        <div id="rightPanel">
+            <div id="ditheredWrapper">
+                <button id="prevBtn">◀</button>
+                <div id="dithered"></div>
+                <div id="sourcePreview"></div>
+                <button id="nextBtn">▶</button>
+            </div>
+            <p style="align-self: center;">Press space to see src image</p>
+            <div id="carouselThumbs"></div>
+        </div>
+    </div>
+
+    <div id="resultsModal">
+        <div id="resultsContent">
+            <h2>Voting Results</h2>
+            <div id="resultsData"></div>
+            <button class="btn" style="margin-top: 20px;" onclick="closeResults()">Close</button>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>

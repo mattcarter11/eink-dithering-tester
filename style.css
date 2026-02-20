@@ -1,0 +1,502 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #444 #1a1a1a;
+}
+
+#mainContent {
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+#leftPanel {
+    width: 250px;
+    background: #252525;
+    border-right: 1px solid #333;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#leftPanel h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+#leftPanel h3 {
+    font-size: 14px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+#buttonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#buttonGroup .btn {
+    width: 100%;
+    margin: 0;
+}
+
+#imageInfo {
+    font-size: 12px;
+    color: #999;
+    padding: 12px 0;
+    margin-bottom: 15px;
+    border-top: 1px solid #333;
+}
+
+#imageList {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.image-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn {
+    background: #333;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+    display: block;
+}
+
+.btn:hover {
+    background: #444;
+}
+
+.btn.primary {
+    background: #4a9eff;
+    border-color: #4a9eff;
+}
+
+.btn.primary:hover {
+    background: #3a8eef;
+}
+
+button {
+    background: #333;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 20px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #444;
+}
+
+.image-item:hover {
+    background: #2a2a2a;
+}
+
+.image-item.active {
+    background: #333;
+    border-color: #4a9eff;
+}
+
+.image-item.voted {
+}
+
+.image-name {
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.vote-indicator {
+    font-size: 13px;
+    margin-left: 10px;
+    color: #22c55e;
+    font-weight: bold;
+    min-width: 13px;
+}
+
+#middlePanel {
+    flex: 0 0 auto;
+    background: #252525;
+    border-right: 1px solid #333;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    max-width: 400px;
+}
+
+#middlePanel p {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+#sourceCanvas {
+    max-width: 100%;
+    max-height: 600px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    object-fit: contain;
+    display: block;
+}
+
+#rightPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden;
+}
+
+#compareArea {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow: hidden;
+}
+
+#ditheredWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    overflow: hidden;
+}
+
+#dithered {
+    flex: 1;
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+#dithered.hidden {
+    display: none;
+}
+
+#sourcePreview {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+#sourcePreview.active {
+    display: flex;
+}
+
+#sourcePreview p {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#sourcePreview canvas {
+    max-width: 100%;
+    max-height: calc(100% - 50px);
+    border: 1px solid #444;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+.canvas-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.canvas-container.active {
+    display: flex;
+}
+
+.canvas-container p {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.canvas-container canvas {
+    max-width: 100%;
+    max-height: calc(100% - 50px);
+    border: 1px solid #444;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+#carouselThumbs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 10px;
+    align-self: center;
+}
+
+#carouselThumbs canvas {
+    cursor: pointer;
+    border: 2px solid #444;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+#carouselThumbs canvas:hover {
+    border-color: #666;
+    transform: scale(1.05);
+}
+
+#carouselThumbs canvas.selected {
+    border-color: #4a9eff;
+    box-shadow: 0 0 10px rgba(74, 158, 255, 0.5);
+    transform: scale(1.1);
+}
+
+#carouselThumbs .thumbnail-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+#carouselThumbs canvas.voted-algorithm {
+    border-color: #22c55e;
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+}
+
+#carouselThumbs canvas.selected.voted-algorithm {
+    border-color: #4a9eff;
+    box-shadow: 0 0 15px rgba(74, 158, 255, 0.8);
+}
+
+.thumb-time {
+    text-align: center;
+    font-size: 10px;
+    color: #999;
+    margin-top: 4px;
+}
+
+#votingButtonGroup {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+#votingButtonGroup .btn {
+    flex: 1;
+    margin: 0;
+}
+
+#carouselThumbs .thumbnail-wrapper.voted-algorithm::after {
+    content: '✓';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #22c55e;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
+}
+
+#resultsModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+#resultsModal.active {
+    display: flex;
+}
+
+#resultsContent {
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 800px;
+    width: 90%;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#resultsContent h2 {
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+
+#resultsData {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+#resultsContent .btn {
+    flex-shrink: 0;
+}
+
+.result-item {
+    background: #1a1a1a;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border-left: 3px solid #4a9eff;
+}
+
+.result-item h3 {
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.results-table {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.results-row {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 15px;
+    align-items: center;
+}
+
+.results-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #e0e0e0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.results-bar-cell {
+    flex: 1;
+}
+
+.result-bar {
+    background: #333;
+    height: 24px;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #444;
+}
+
+.result-bar-fill {
+    background: #4a9eff;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    transition: width 0.3s;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+.result-bar-fill.has-content {
+    padding: 0 8px;
+}
+
+#noImages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #666;
+    font-size: 16px;
+}
+
+#noImages button {
+    margin-top: 20px;
+}
+
+#instructions {
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 15px;
+    font-size: 12px;
+    color: #999;
+}
+
+#instructions strong {
+    color: #e0e0e0;
+}
