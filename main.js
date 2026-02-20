@@ -445,7 +445,7 @@ window.addEventListener('keydown', (e) => {
     } else if (e.key === 'Enter') {
         e.preventDefault();
         submitVote();
-    } else if (e.key === 'Super') {
+    } else if (e.key === 'Delete') {
         e.preventDefault();
         clearVote();
     } else if (e.key === ' ') {
