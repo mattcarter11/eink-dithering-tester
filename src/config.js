@@ -32,8 +32,8 @@ export const algorithms = [
     // { name: "Lab - 🎨 RGB",                 type: 'floydLab',       palette: pRGB  }, // Gray like because of not real displayed colors
     // { name: "Lab errRGB - 🎨 RGB",          type: 'floydLabErrRGB', palette: pRGB  }, // Gray like because of not real displayed colors
 
-    { name: "Lab - 🎨 Wenting",             type: 'floydLab',       palette: pWenting },
-    { name: "Lab errRGB - 🎨 Wenting",      type: 'floydLabErrRGB', palette: pWenting },
+    // { name: "Lab - 🎨 Wenting",             type: 'floydLab',       palette: pWenting }, // Full is best
+    // { name: "Lab errRGB - 🎨 Wenting",      type: 'floydLabErrRGB', palette: pWenting }, // Full is best
 
     { name: "Lab - 🎨 Full",                type: 'floydLab',       palette: pFull },
     { name: "Lab errRGB - 🎨 Full",         type: 'floydLabErrRGB', palette: pFull },
