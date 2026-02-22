@@ -4,8 +4,8 @@ A browser-based tool to compare different image dithering algorithms using an e-
 
 Load your own images, see multiple dithering outputs side-by-side, and vote on which algorithm looks best.
 
-It's especially useful when testing:
-- CIELAB vs RGB dithering
+Useful when testing:
+- RGB vs CIELAB dithering
 - Diferent palettes quantization
 - Different error diffusion matrices
 - Perceptual color handling
@@ -13,9 +13,16 @@ It's especially useful when testing:
 
 ## ✨ Features
 
-- Multiple dithering algorithms (RGB, CIELAB, epdoptimize)
 - Side-by-side dithering comparison
 - Dithered image voting system to determine best algorithm
+- Out of the box dithering algorithms:
+    - Floyd in RGB color space
+    - Floyd in CEILAB color space
+    - Floyd in CEILAB color space but erro difusion on RGB
+- Out of the box palettes:
+    - Pure RGB
+    - Wenting
+    - Full (Wenting + RGB)
 
 ## 🚀 Installation
 
@@ -48,12 +55,16 @@ The tool has three sections:
 
 ![ui](docs/ui-example.png)
 
-### Shorcuts:
-- Up / Down arrows to change selected image
-- Left / Right arrow keys to switch the algorithm result view
-- Spacebar to show the original image in the algorithm result view
-- Press number keys (1–9) to jump directly to an algorithm result view
-- Enter / Supr to add or remove the vote
+### Shorcut
+
+Key      | Shorcut
+---------|------------------------------------
+←/→      | Cycle through dithering algorithms
+↑/↓      | Navigate between images
+Enter    | Submit vote for current algorithm
+Delete   | Clear vote for current image
+Space    | Hold to preview source image
+1–9      | Jump directly to algorithm by number
 
 ### Viewing
 
@@ -64,3 +75,13 @@ The tool has three sections:
 - Go image by image, voting for the best algorithm. (change your vote anytime)
 - Click "Show Results" to see a summary of vote counts across all tested images.
 - Quickly identify which algorithm performs best overall.
+
+### Adding palettes / algorithms
+
+**Palette**
+- Add the palette in *src/config.js*
+- Use it in the `algorithms` const in *src/config.js*
+
+**Algorithms**
+- Implement a new algorithm in *src/algorithms*
+- Use it in the `algorithms` const in *src/config.js*

@@ -1,5 +1,5 @@
 {
-  "name": "epd-server",
+  "name": "epd-dithering-tester",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
