@@ -10,6 +10,10 @@ export const pRGB     = ['#000000', '#ffffff', '#0000ff', '#00ff00', '#ff0000', 
 export const pWenting = ['#2e2c42', '#d3d6cd', '#316ac1', '#5c8a5b', '#b11d19', '#d9c701'];
 export const pFull = pWenting.concat(pRGB);
 
+// Other palettes
+const paperless = ["#191E21", "#e8e8e8", "#2157ba", "#125f20", "#b21318", "#efde44"];
+const photoframe = ["#020202", "#bec8c8", "#05409e", "#27663c", "#871300", "#cdca00"];
+
 // --- Algorithm options ---
 
 export const ALGORITHM_TYPES = {

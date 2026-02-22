@@ -1,14 +1,7 @@
 import { hex2rgb, closestColorIdxRGB, weightsFloyd, spectraPalette } from "./common.js";
 
-export function ditherFloydRGB(inputCanvas, outputCanvas, hexPalette, factor) {
+export function ditherFloydRGB(data, width, height, hexPalette, factor) {
     const rgbPalette = hexPalette.map(hex2rgb);
-    const width = inputCanvas.width;
-    const height = inputCanvas.height;
-
-    // Process data
-    const tmpCtx = inputCanvas.getContext('2d');
-    const imageData = tmpCtx.getImageData(0, 0, width, height);
-    const data = imageData.data;
 
     // Separate error buffers of float32 for better speed
     const errBufR = new Float32Array(width * height).fill(0)
@@ -26,9 +19,9 @@ export function ditherFloydRGB(inputCanvas, outputCanvas, hexPalette, factor) {
             
             // Update the pixel in the image data
             const paletteIdx = closestColorIdxRGB([r, g, b], rgbPalette);
+            const mappedPixel = rgbPalette[paletteIdx];
             
             // Distribute the error to the next pixels
-            const mappedPixel = rgbPalette[paletteIdx];
             const errR = (r - mappedPixel[0]) * factor;
             const errG = (g - mappedPixel[1]) * factor;
             const errB = (b - mappedPixel[2]) * factor;
@@ -51,8 +44,4 @@ export function ditherFloydRGB(inputCanvas, outputCanvas, hexPalette, factor) {
             data[idx + 2] = spectraPixel[2];
         }
     }
-
-    outputCanvas.width = width;
-    outputCanvas.height = height;
-    outputCanvas.getContext('2d').putImageData(imageData, 0, 0);
 }

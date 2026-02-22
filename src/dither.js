@@ -24,21 +24,29 @@ export function drawFitImage(ctx, img, preboost = false) {
 
 // Runs the dithering algorithm described by `algorithm` on `img` and writes
 // the result to `outputCanvas`. Returns the elapsed time in ms.
-export function processImage(img, algorithm, outputCanvas) {
+export function processImage(img, conf, outputCanvas) {
     const inputCanvas = document.createElement('canvas');
     inputCanvas.width  = DISPLAY_WIDTH;
     inputCanvas.height = DISPLAY_HEIGHT;
     const ctx = inputCanvas.getContext('2d');
 
-    drawFitImage(ctx, img, algorithm.preboost );
-
+    // Pre process data
+    drawFitImage(ctx, img, conf.preboost );
+    
     const t0 = performance.now();
 
-    switch (algorithm.type) {
-        case ALGORITHM_TYPES.floydRGB:        ditherFloydRGB(inputCanvas, outputCanvas, algorithm.palette, DITHER_FACTOR); break;
-        case ALGORITHM_TYPES.floydLab:        ditherFloydLab(inputCanvas, outputCanvas, algorithm.palette, DITHER_FACTOR); break;
-        case ALGORITHM_TYPES.floydLabErrRGB:  ditherFloydLabErrRGB(inputCanvas, outputCanvas, algorithm.palette, DITHER_FACTOR); break;
+    const imageData = ctx.getImageData(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    const data = imageData.data;
+
+    switch (conf.type) {
+        case ALGORITHM_TYPES.floydRGB:        ditherFloydRGB(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, conf.palette, DITHER_FACTOR); break;
+        case ALGORITHM_TYPES.floydLab:        ditherFloydLab(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, conf.palette, DITHER_FACTOR); break;
+        case ALGORITHM_TYPES.floydLabErrRGB:  ditherFloydLabErrRGB(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, conf.palette, DITHER_FACTOR); break;
     }
+    
+    outputCanvas.width = DISPLAY_WIDTH;
+    outputCanvas.height = DISPLAY_HEIGHT;
+    outputCanvas.getContext('2d').putImageData(imageData, 0, 0);
 
     return performance.now() - t0;
 }

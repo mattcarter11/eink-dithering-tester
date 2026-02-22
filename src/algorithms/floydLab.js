@@ -1,22 +1,14 @@
 import { hex2rgb, rgbToLab, closestColorIdxLab, weightsFloyd, spectraPalette } from "./common.js";
 
-export function ditherFloydLab(inputCanvas, outputCanvas, hexPalette, factor) {
-    const rgbPalette = hexPalette.map(hex2rgb)
+export function ditherFloydLab(data, width, height,  hexPalette, factor) {
+    const rgbPalette = hexPalette.map(hex2rgb);
     const labPalette = rgbPalette.map(([r,g,b]) => rgbToLab(r, g, b))
-    const width = inputCanvas.width;
-    const height = inputCanvas.height;
-
-    // Process data
-    const tmpCtx = inputCanvas.getContext('2d');
-    const imageData = tmpCtx.getImageData(0, 0, width, height);
-    const data = imageData.data;
 
     // Separate error buffers of float32 for better speed
     const errBufL = new Float32Array(width * height).fill(0)
     const errBufA = new Float32Array(width * height).fill(0)
     const errBufB = new Float32Array(width * height).fill(0)
     
-    // Floyd-Steinberg error diffusion
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             const errIdx = y * width + x
@@ -33,9 +25,9 @@ export function ditherFloydLab(inputCanvas, outputCanvas, hexPalette, factor) {
 
             // Calculate newPixel
             const paletteIdx = closestColorIdxLab(labPixel, labPalette);
+            const newPixel = labPalette[paletteIdx];
 
             // Distribute the error to the next pixels
-            const newPixel = labPalette[paletteIdx];
             const errL = (labPixel[0] - newPixel[0]) * factor;
             const errA = (labPixel[1] - newPixel[1]) * factor;
             const errB = (labPixel[2] - newPixel[2]) * factor;
@@ -58,8 +50,4 @@ export function ditherFloydLab(inputCanvas, outputCanvas, hexPalette, factor) {
             data[idx + 2] = spectraPixel[2];
         }
     }
-
-    outputCanvas.width = width;
-    outputCanvas.height = height;
-    outputCanvas.getContext('2d').putImageData(imageData, 0, 0);
 }
