@@ -21,12 +21,12 @@ export const ALGORITHM_TYPES = {
 // --- Active algorithms ---
 
 export const algorithms = [
-    { name: "RGB - 🎨 RGB",                 type: 'floydRGB', palette: pRGB},
-    // { name: "RGB - 🎨 Wenting",             type: 'floydRGB', palette: pWenting }, // Others better
+    // { name: "RGB - 🎨 RGB",                 type: 'floydRGB', palette: pRGB}, // Full is best
+    // { name: "RGB - 🎨 Wenting",             type: 'floydRGB', palette: pWenting }, // Full is best
     { name: "RGB - 🎨 Full",                type: 'floydRGB', palette: pFull },
 
-    { name: "RGB boost - 🎨 RGB",           type: 'floydRGB', palette: pRGB, preboost: true },
-    // { name: "RGB boost - 🎨 Wenting",       type: 'floydRGB', palette: pWenting, preboost: true }, // Others better
+    // { name: "RGB boost - 🎨 RGB",           type: 'floydRGB', palette: pRGB, preboost: true }, // Full is best
+    // { name: "RGB boost - 🎨 Wenting",       type: 'floydRGB', palette: pWenting, preboost: true }, // Full is best
     { name: "RGB boost - 🎨 Full",          type: 'floydRGB', palette: pFull, preboost: true },
 
     { name: "Lab - 🎨 RGB",                 type: 'floydLab',       palette: pRGB  },
