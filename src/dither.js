@@ -1,12 +1,11 @@
-import { DISPLAY_WIDTH, DISPLAY_HEIGHT, DITHER_FACTOR, ALGORITHM_TYPES, pWenting } from "./config.js";
+import { DISPLAY_WIDTH, DISPLAY_HEIGHT, DITHER_FACTOR, ALGORITHM_TYPES } from "./config.js";
 import { ditherFloydRGB } from "./algorithms/floydRGB.js";
 import { ditherFloydLab } from "./algorithms/floydLab.js";
 import { ditherFloydLabErrRGB } from "./algorithms/floydLabErrRGB.js";
-import { hex2rgb } from "./algorithms/common.js";
 
 // Returns { width, height, x, y } to fit `img` inside the display, centered.
 export function getScaledDimensions(img) {
-    const scale = Math.min(DISPLAY_WIDTH / img.width, DISPLAY_HEIGHT / img.height);
+    const scale = Math.max(DISPLAY_WIDTH / img.width, DISPLAY_HEIGHT / img.height);
     return {
         width:  img.width  * scale,
         height: img.height * scale,
