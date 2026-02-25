@@ -1,4 +1,4 @@
-import { DISPLAY_WIDTH, DISPLAY_HEIGHT, algorithms } from "./config.js";
+import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
 import { state } from "./state.js";
 import { drawFitImage, processImage } from "./dither.js";
 import { showCanvas, updateThumbnail } from "./canvas.js";
@@ -33,9 +33,9 @@ export function renderCurrentImage() {
     sourcePreview.appendChild(previewCanvas);
 
     // Run every algorithm and update its canvas + thumbnail
-    algorithms.forEach((algo, index) => {
+    configs.forEach((conf, index) => {
         const canvas  = state.canvasContainers[index].querySelector('canvas');
-        const elapsed = processImage(img, algo, canvas);
+        const elapsed = processImage(img, conf, canvas);
         updateThumbnail(index, canvas, elapsed);
     });
 

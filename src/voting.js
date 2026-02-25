@@ -1,4 +1,4 @@
-import { algorithms } from "./config.js";
+import { configs } from "./config.js";
 import { state, castVote, deleteVote } from "./state.js";
 import { carousleThumbs } from "./canvas.js";
 import { updateImageList, updateImageInfo, renderCurrentImage } from "./ui.js";
@@ -10,7 +10,7 @@ export function updateVoteIndicators() {
     const votedAlgorithmName = state.votes[state.images[state.currentImageIndex].name];
 
     Array.from(carousleThumbs.children).forEach((wrapper, index) => {
-        const isVoted = algorithms[index].name === votedAlgorithmName;
+        const isVoted = configs[index].name === votedAlgorithmName;
         wrapper.classList.toggle('voted-algorithm', isVoted);
         wrapper.querySelector('canvas').classList.toggle('voted-algorithm', isVoted);
     });
@@ -22,7 +22,7 @@ export function submitVote() {
     if (state.images.length === 0) return;
 
     const imageName     = state.images[state.currentImageIndex].name;
-    const algorithmName = algorithms[state.selectedAlgorithmIndex].name;
+    const algorithmName = configs[state.selectedAlgorithmIndex].name;
 
     castVote(imageName, algorithmName);
     updateVoteIndicators();
@@ -52,7 +52,7 @@ export function showResults() {
     const modal       = document.getElementById('resultsModal');
     const resultsData = document.getElementById('resultsData');
 
-    const counts = Object.fromEntries(algorithms.map(a => [a.name, 0]));
+    const counts = Object.fromEntries(configs.map(a => [a.name, 0]));
     Object.values(state.votes).forEach(name => counts[name]++);
 
     const total = Object.keys(state.votes).length;

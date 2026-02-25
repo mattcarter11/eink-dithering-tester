@@ -22,16 +22,16 @@ export const ALGORITHM_TYPES = {
     floydLabErrRGB: 'floydLabErrRGB',
 };
 
-// --- Active algorithms ---
+// --- Configs ---
 
-export const algorithms = [
-    // { name: "RGB - 🎨 RGB",                 type: 'floydRGB', palette: pRGB}, // Full is best
-    // { name: "RGB - 🎨 Wenting",             type: 'floydRGB', palette: pWenting }, // Full is best
+export const configs = [
+    { name: "RGB - 🎨 RGB",                 type: 'floydRGB', palette: pRGB}, // Full is best
+    { name: "RGB - 🎨 Wenting",             type: 'floydRGB', palette: pWenting }, // Full is best
     { name: "RGB - 🎨 Full",                type: 'floydRGB', palette: pFull },
 
     // { name: "RGB boost - 🎨 RGB",           type: 'floydRGB', palette: pRGB, preboost: true }, // Full is best
     // { name: "RGB boost - 🎨 Wenting",       type: 'floydRGB', palette: pWenting, preboost: true }, // Full is best
-    { name: "RGB boost - 🎨 Full",          type: 'floydRGB', palette: pFull, preboost: true },
+    // { name: "RGB boost - 🎨 Full",          type: 'floydRGB', palette: pFull, preboost: true },
 
     // { name: "Lab - 🎨 RGB",                 type: 'floydLab',       palette: pRGB  }, // Gray like because of not real displayed colors
     // { name: "Lab errRGB - 🎨 RGB",          type: 'floydLabErrRGB', palette: pRGB  }, // Gray like because of not real displayed colors

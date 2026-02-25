@@ -1,4 +1,4 @@
-import { DISPLAY_WIDTH, DISPLAY_HEIGHT, algorithms } from "./config.js";
+import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
 import { state, addCanvasContainer, clearCanvasContainers, setSelectedAlgorithm } from "./state.js";
 
 const carousleThumbs = document.getElementById('carouselThumbs');
@@ -40,7 +40,7 @@ export function initializeCanvases() {
     clearCanvasContainers();
     ditheredDiv.innerHTML    = '';
     carousleThumbs.innerHTML = '';
-    algorithms.forEach(algo => createCanvasContainer(algo.name));
+    configs.forEach(algo => createCanvasContainer(algo.name));
 }
 
 // Makes the canvas at `index` visible and deactivates all others.
