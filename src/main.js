@@ -51,13 +51,7 @@ document.getElementById('nextBtn').addEventListener('click', () => {
 });
 
 // --- Keyboard shortcuts ---
-let heldKey = null;
-
 window.addEventListener('keydown', (e) => {
-    if (heldKey !== null) return;
-  
-    heldKey = e.key;
-
     if (state.images.length === 0 || e.target.tagName === 'INPUT') return;
 
     switch (e.key) {
@@ -121,8 +115,6 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
-    if (heldKey === null || heldKey !== e.key) return;
-    
     switch (e.key) {
         case 'Shift':
         case ' ':
@@ -132,7 +124,6 @@ window.addEventListener('keyup', (e) => {
             document.getElementById('mappedPreview').classList.add('hidden');
             break;
     }
-    heldKey = null;
 });
 
 // --- Init ---
