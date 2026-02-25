@@ -1,5 +1,6 @@
 import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
 import { state, addCanvasContainer, clearCanvasContainers, setSelectedAlgorithm } from "./state.js";
+import { updateMappedPreview } from "./ui.js";
 
 const carousleThumbs = document.getElementById('carouselThumbs');
 const ditheredDiv    = document.getElementById('dithered');
@@ -46,10 +47,11 @@ export function initializeCanvases() {
 // Makes the canvas at `index` visible and deactivates all others.
 export function showCanvas(index) {
     setSelectedAlgorithm(index);
-    state.canvasContainers.forEach((c, i) => c.classList.toggle('active', i === index));
+    state.canvasContainers.forEach((c, i) => c.classList.toggle('hidden', i != index));
     Array.from(carousleThumbs.children).forEach((wrapper, i) => {
         wrapper.querySelector('canvas').classList.toggle('selected', i === index);
     });
+    updateMappedPreview();
 }
 
 // Copies `sourceCanvas` into the thumbnail at `index` and updates its timing label.

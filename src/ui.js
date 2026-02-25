@@ -5,6 +5,7 @@ import { showCanvas, updateThumbnail } from "./canvas.js";
 import { updateVoteIndicators } from "./voting.js";
 
 const sourcePreview = document.getElementById('sourcePreview');
+const mappedPreview = document.getElementById('mappedPreview');
 const sourceCanvas  = document.getElementById('sourceCanvas');
 const sourceCtx     = sourceCanvas.getContext('2d');
 
@@ -32,6 +33,8 @@ export function renderCurrentImage() {
     sourcePreview.appendChild(previewTitle);
     sourcePreview.appendChild(previewCanvas);
 
+    updateMappedPreview();
+
     // Run every algorithm and update its canvas + thumbnail
     configs.forEach((conf, index) => {
         const canvas  = state.canvasContainers[index].querySelector('canvas');
@@ -42,6 +45,24 @@ export function renderCurrentImage() {
     showCanvas(state.selectedAlgorithmIndex);
     updateImageInfo();
     updateVoteIndicators();
+}
+
+export function updateMappedPreview() {
+    // Rebuild the mapped preview panel (shown on shift hold)
+    const mappedCanvas = document.createElement('canvas');
+    mappedCanvas.width  = DISPLAY_WIDTH;
+    mappedCanvas.height = DISPLAY_HEIGHT;
+
+    const img = state.images[state.currentImageIndex].image;
+    drawFitImage(mappedCanvas.getContext('2d'), img);
+
+    mappedPreview.innerHTML = '';
+    const mappedTitle = document.createElement('p');
+    mappedTitle.textContent = 'Mapped Image (no dithering)';
+    mappedPreview.appendChild(mappedTitle);
+    mappedPreview.appendChild(mappedCanvas);
+
+    processImage(img, configs[state.selectedAlgorithmIndex], mappedCanvas, false);
 }
 
 // Rebuilds the image list sidebar, marking the active image and any voted ones.

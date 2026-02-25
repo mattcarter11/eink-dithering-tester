@@ -1,4 +1,4 @@
-import { algorithms } from "./config.js";
+import { configs } from "./config.js";
 import { state, resetState, addImage, sortImages } from "./state.js";
 import { initializeCanvases, showCanvas } from "./canvas.js";
 import { submitVote, clearVote, showResults, closeResults } from "./voting.js";
@@ -41,29 +41,35 @@ document.getElementById('fileInput').addEventListener('change', (e) => {
 // --- Prev / Next buttons ---
 
 document.getElementById('prevBtn').addEventListener('click', () => {
-    const index = (state.selectedAlgorithmIndex - 1 + algorithms.length) % algorithms.length;
+    const index = (state.selectedAlgorithmIndex - 1 + configs.length) % configs.length;
     showCanvas(index);
 });
 
 document.getElementById('nextBtn').addEventListener('click', () => {
-    const index = (state.selectedAlgorithmIndex + 1) % algorithms.length;
+    const index = (state.selectedAlgorithmIndex + 1) % configs.length;
     showCanvas(index);
 });
 
 // --- Keyboard shortcuts ---
+let heldKey = null;
+
 window.addEventListener('keydown', (e) => {
+    if (heldKey !== null) return;
+  
+    heldKey = e.key;
+
     if (state.images.length === 0 || e.target.tagName === 'INPUT') return;
 
     switch (e.key) {
         case 'ArrowLeft': {
             e.preventDefault();
-            const index = (state.selectedAlgorithmIndex - 1 + algorithms.length) % algorithms.length;
+            const index = (state.selectedAlgorithmIndex - 1 + configs.length) % configs.length;
             showCanvas(index);
             break;
         }
         case 'ArrowRight': {
             e.preventDefault();
-            const index = (state.selectedAlgorithmIndex + 1) % algorithms.length;
+            const index = (state.selectedAlgorithmIndex + 1) % configs.length;
             showCanvas(index);
             break;
         }
@@ -93,26 +99,40 @@ window.addEventListener('keydown', (e) => {
             e.preventDefault();
             clearVote();
             break;
+        case 'Shift':
+            e.preventDefault();
+            document.getElementById('dithered').classList.add('hidden');
+            document.getElementById('sourcePreview').classList.add('hidden');
+            document.getElementById('mappedPreview').classList.remove('hidden');
+            break;
         case ' ':
             e.preventDefault();
-            document.getElementById('sourcePreview').classList.add('active');
             document.getElementById('dithered').classList.add('hidden');
+            document.getElementById('sourcePreview').classList.remove('hidden');
+            document.getElementById('mappedPreview').classList.add('hidden');
             break;
         default:
             if (/^[1-9]$/.test(e.key)) {
                 e.preventDefault();
                 const index = parseInt(e.key, 10) - 1;
-                if (index < algorithms.length) showCanvas(index);
+                if (index < configs.length) showCanvas(index);
             }
     }
 });
 
 window.addEventListener('keyup', (e) => {
-    if (e.key === ' ') {
-        e.preventDefault();
-        document.getElementById('sourcePreview').classList.remove('active');
-        document.getElementById('dithered').classList.remove('hidden');
+    if (heldKey === null || heldKey !== e.key) return;
+    
+    switch (e.key) {
+        case 'Shift':
+        case ' ':
+            e.preventDefault();
+            document.getElementById('dithered').classList.remove('hidden');
+            document.getElementById('sourcePreview').classList.add('hidden');
+            document.getElementById('mappedPreview').classList.add('hidden');
+            break;
     }
+    heldKey = null;
 });
 
 // --- Init ---

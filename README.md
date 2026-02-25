@@ -61,9 +61,10 @@ Key      | Shorcut
 ---------|------------------------------------
 ←/→      | Cycle through dithering algorithms
 ↑/↓      | Navigate between images
+Space    | Hold to preview source image
+Shift    | Flat map of closest colors (without dithering)
 Enter    | Submit vote for current algorithm
 Delete   | Clear vote for current image
-Space    | Hold to preview source image
 1–9      | Jump directly to algorithm by number
 
 ### Viewing
