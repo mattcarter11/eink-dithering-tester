@@ -9,6 +9,17 @@ window.showResults  = showResults;
 window.closeResults = closeResults;
 window.submitVote   = submitVote;
 window.clearVote    = clearVote;
+window.showShortcuts = showShortcuts;
+window.closeShortcuts = closeShortcuts;
+
+function showShortcuts() {
+    document.getElementById('shortcutsModal').classList.add('active');
+}
+
+function closeShortcuts() {
+    document.getElementById('shortcutsModal').classList.remove('active');
+}
+
 
 // --- File input ---
 
@@ -55,6 +66,11 @@ window.addEventListener('keydown', (e) => {
     if (state.images.length === 0 || e.target.tagName === 'INPUT') return;
 
     switch (e.key) {
+        case 'Escape':
+            e.preventDefault();
+            closeResults();
+            closeShortcuts();
+            break;
         case 'ArrowLeft': {
             e.preventDefault();
             const index = (state.selectedAlgorithmIndex - 1 + configs.length) % configs.length;

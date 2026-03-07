@@ -15,6 +15,7 @@
             <div id="buttonGroup">
                 <button class="primary" onclick="document.getElementById('fileInput').click()">Load Images</button>
                 <button onclick="showResults()">Show Results</button>
+                <button onclick="showShortcuts()">Shortcuts</button>
             </div>
             <div id="imageInfo"></div>
             <h3>Images</h3>
@@ -53,11 +54,39 @@
         </div>
     </div>
 
-    <div id="resultsModal">
-        <div id="resultsContent">
+    <div id="resultsModal" class="modal">
+        <div class="modalContent">
             <h2>Voting Results</h2>
             <div id="resultsData"></div>
             <button style="margin-top: 20px;" onclick="closeResults()">Close</button>
+        </div>
+    </div>
+
+    <div id="shortcutsModal" class="modal">
+        <div class="modalContent">
+            <h2>Keyboard Shortcuts</h2>
+            <table id="shortcutsTable">
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Usage</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>↑/↓</td><td>Navigation</td><td>Navigate between images</td></tr>
+                    <tr><td>←/→</td><td>Navigation</td><td>Cycle through dithering algorithms</td></tr>
+                    <tr><td>1–9</td><td>Navigation</td><td>Jump directly to algorithm by number</td></tr>
+                    <tr><td>Escape</td><td>Navigation</td><td>Close modal</td></tr>
+                    <tr><td>Space</td><td>Viewing</td><td>Hold to view source image</td></tr>
+                    <tr><td>a/A</td><td>Viewing</td><td>Show in gamut palette pixels</td></tr>
+                    <tr><td>s/S</td><td>Viewing</td><td>Show smoothed dithered image</td></tr>
+                    <tr><td>d/D</td><td>Viewing</td><td>Flat map to closest palette colors (without dithering)</td></tr>
+                    <tr><td>Enter</td><td>Voting</td><td>Submit vote for current algorithm</td></tr>
+                    <tr><td>Delete</td><td>Voting</td><td>Clear vote for current image</td></tr>
+                </tbody>
+            </table>
+            <button style="margin-top: 20px;" onclick="closeShortcuts()">Close</button>
         </div>
     </div>
 

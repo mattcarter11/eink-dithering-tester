@@ -62,6 +62,7 @@ Key      | Usage      | Description
 ↑/↓      | Navigation | Navigate between images
 ←/→      | Navigation | Cycle through dithering algorithms
 1–9      | Navigation | Jump directly to algorithm by number
+Escape   | Naviation  | Close modal
 Space    | Viewing    | Hold to view source image
 a/a      | Viewing    | Show in gammut palette pixels
 s/S      | Viewing    | Show smoothed dithered image

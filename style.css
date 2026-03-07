@@ -299,7 +299,7 @@ canvas.smooth {
     box-shadow: 0 0 8px rgba(34, 197, 94, 0.8);
 }
 
-#resultsModal {
+.modal {
     display: none;
     position: fixed;
     top: 0;
@@ -312,11 +312,11 @@ canvas.smooth {
     align-items: center;
 }
 
-#resultsModal.active {
+.modal.active {
     display: flex;
 }
 
-#resultsContent {
+.modalContent {
     background: #252525;
     border: 1px solid #333;
     border-radius: 8px;
@@ -383,4 +383,37 @@ canvas.smooth {
 
 .result-bar-fill.has-content {
     padding: 0 8px;
+}
+
+/* Table styling */
+#shortcutsTable {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e0e0e0;
+}
+
+#shortcutsTable thead {
+    background: #333;
+}
+
+#shortcutsTable th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    border-bottom: 1px solid #444;
+}
+
+#shortcutsTable tbody tr {
+    border-bottom: 1px solid #333;
+    transition: background 0.2s;
+}
+
+#shortcutsTable tbody tr:hover {
+    background: #2a2a2a;
+}
+
+#shortcutsTable td {
+    padding: 10px 12px;
+    font-size: 13px;
 }
