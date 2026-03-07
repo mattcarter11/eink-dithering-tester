@@ -12,12 +12,11 @@
     <div id="mainContent">
         <div id="leftPanel">
             <h2>Dither Comparer</h2>
-            <div id="buttonGroup">
+            <div id="buttonGroupCol">
                 <button class="primary" onclick="document.getElementById('fileInput').click()">Load Images</button>
-                <button onclick="showResults()">Show Results</button>
                 <button onclick="showShortcuts()">Shortcuts</button>
             </div>
-            <div id="imageInfo"></div>
+            <hr>
             <h3>Images</h3>
             <div id="imageList"></div>
         </div>
@@ -25,7 +24,11 @@
         <div id="middlePanel">
             <h2>Source Image</h2>
             <canvas id="sourceCanvas"></canvas>
-            <div id="votingButtonGroup">
+            <hr>
+            <h2>Voting</h2>
+            <div id="imageInfo"></div>
+            <div id="buttonGroupRow">
+                <button onclick="showResults()">Results</button>
                 <button onclick="submitVote()">Submit Vote</button>
                 <button onclick="clearVote()">Clear Vote</button>
             </div>

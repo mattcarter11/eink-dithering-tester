@@ -22,6 +22,12 @@ h3 {
     font-weight: 600;
 }
 
+hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 5px 0px;
+}
+
 
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
@@ -65,7 +71,7 @@ h3 {
     flex-direction: column;
 }
 
-#buttonGroup {
+#buttonGroupCol {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -74,8 +80,6 @@ h3 {
 #imageInfo {
     font-size: 12px;
     color: #999;
-    padding: 10px 0;
-    border-top: 1px solid #333;
 }
 
 #imageList {
@@ -204,6 +208,7 @@ button.primary:hover {
 
 .canvas-container {
     display: flex;
+    gap: 10px;
     flex-direction: column;
     align-items: center;
     height: 100%;
@@ -272,12 +277,12 @@ canvas.smooth {
     margin-top: 4px;
 }
 
-#votingButtonGroup {
+#buttonGroupRow {
     display: flex;
     gap: 10px;
 }
 
-#votingButtonGroup button {
+#buttonGroupRow button {
     flex: 1;
 }
 
