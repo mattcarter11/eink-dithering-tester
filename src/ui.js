@@ -62,7 +62,7 @@ export function updateMappedPreview() {
     mappedPreview.appendChild(mappedTitle);
     mappedPreview.appendChild(mappedCanvas);
 
-    processImage(img, configs[state.selectedAlgorithmIndex], mappedCanvas, false);
+    processImage(img, configs[state.selectedAlgorithmIndex], mappedCanvas, true);
 }
 
 // Rebuilds the image list sidebar, marking the active image and any voted ones.

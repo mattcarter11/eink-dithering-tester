@@ -1,10 +1,8 @@
-import { DISPLAY_WIDTH, DISPLAY_HEIGHT, DITHER_FACTOR, ALGORITHM_TYPES } from "./config.js";
-import { ditherFloydRGB } from "./algorithms/floydRGB.js";
-import { ditherFloydLab } from "./algorithms/floydLab.js";
-import { ditherFloydLabErrRGB } from "./algorithms/floydLabErrRGB.js";
+import { DISPLAY_WIDTH, DISPLAY_HEIGHT, DITHER_FACTOR, palettes } from "./config.js";
+import { dither } from "./algorithms/floyd.js";
 
 // Returns { width, height, x, y } to fit `img` inside the display, centered.
-export function getScaledDimensions(img) {
+function getScaledDimensions(img) {
     const scale = Math.max(DISPLAY_WIDTH / img.width, DISPLAY_HEIGHT / img.height);
     return {
         width:  img.width  * scale,
@@ -24,31 +22,37 @@ export function drawFitImage(ctx, img, preboost = false) {
 
 // Runs the dithering algorithm described by `algorithm` on `img` and writes
 // the result to `outputCanvas`. Returns the elapsed time in ms.
-export function processImage(img, conf, outputCanvas, dither = true) {
-    const inputCanvas = document.createElement('canvas');
-    inputCanvas.width  = DISPLAY_WIDTH;
-    inputCanvas.height = DISPLAY_HEIGHT;
-    const ctx = inputCanvas.getContext('2d');
+export function processImage(img, config, outputCanvas, noDither = false) {
+    outputCanvas.width  = DISPLAY_WIDTH;
+    outputCanvas.height = DISPLAY_HEIGHT;
+    const ctx = outputCanvas.getContext('2d');
 
     // Pre process data
-    drawFitImage(ctx, img, conf.preboost );
+    drawFitImage(ctx, img, config.preboost);
     
     const t0 = performance.now();
 
     const imageData = ctx.getImageData(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
     const data = imageData.data;
 
-    const factor = dither ? DITHER_FACTOR : 0;
+    const factor = noDither ? 0 : DITHER_FACTOR;
 
-    switch (conf.type) {
-        case ALGORITHM_TYPES.floydRGB:        ditherFloydRGB(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, conf.palette, factor); break;
-        case ALGORITHM_TYPES.floydLab:        ditherFloydLab(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, conf.palette, factor); break;
-        case ALGORITHM_TYPES.floydLabErrRGB:  ditherFloydLabErrRGB(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, conf.palette, factor); break;
-    }
+    dither(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, factor, config.palette, config.errSpace, config.distSpace, config.useCRA);
     
-    outputCanvas.width = DISPLAY_WIDTH;
-    outputCanvas.height = DISPLAY_HEIGHT;
-    outputCanvas.getContext('2d').putImageData(imageData, 0, 0);
+    ctx.putImageData(imageData, 0, 0);
 
     return performance.now() - t0;
+}
+
+
+export function createConfig(palette, distSpace, errSpace, preboost = false, useCRA = false) {
+    const paletteName = Object.keys(palettes).find(k => palettes[k] === palette);
+    let name = `E: ${errSpace}  D: ${distSpace}- 🎨 ${paletteName}`
+    
+    let mods = [];
+    if (preboost) mods.push('⬆️');
+    if (useCRA) mods.push('CRA');
+    if (mods.length) name += ' - ' + mods.join(' & ');
+
+    return { name, palette, errSpace, distSpace, preboost, useCRA };
 }

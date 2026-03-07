@@ -57,15 +57,16 @@ The tool has three sections:
 
 ### Shorcut
 
-Key      | Shorcut
----------|------------------------------------
-←/→      | Cycle through dithering algorithms
-↑/↓      | Navigate between images
-Space    | Hold to preview source image
-Shift    | Flat map of closest colors (without dithering)
-Enter    | Submit vote for current algorithm
-Delete   | Clear vote for current image
-1–9      | Jump directly to algorithm by number
+Key      | Usage      | Description
+---------|------------|------------------------
+↑/↓      | Navigation | Navigate between images
+←/→      | Navigation | Cycle through dithering algorithms
+1–9      | Navigation | Jump directly to algorithm by number
+Space    | Viewing    | Hold to preview source image
+s/S      | Viewing    | Show smoothed image
+f/F      | Viewing    | Flat map of closest colors (without dithering)
+Enter    | Votting    | Submit vote for current algorithm
+Delete   | Votting    | Clear vote for current image
 
 ### Viewing
 

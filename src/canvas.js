@@ -41,7 +41,7 @@ export function initializeCanvases() {
     clearCanvasContainers();
     ditheredDiv.innerHTML    = '';
     carousleThumbs.innerHTML = '';
-    configs.forEach(algo => createCanvasContainer(algo.name));
+    configs.forEach(config => createCanvasContainer(config.name));
 }
 
 // Makes the canvas at `index` visible and deactivates all others.

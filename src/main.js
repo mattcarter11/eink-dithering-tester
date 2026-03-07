@@ -93,11 +93,17 @@ window.addEventListener('keydown', (e) => {
             e.preventDefault();
             clearVote();
             break;
-        case 'Shift':
+        case 'F':
+        case 'f':
             e.preventDefault();
             document.getElementById('dithered').classList.add('hidden');
             document.getElementById('sourcePreview').classList.add('hidden');
             document.getElementById('mappedPreview').classList.remove('hidden');
+            break;
+        case 'S':
+        case 's':
+            e.preventDefault();
+            document.querySelectorAll('canvas').forEach(e => e.classList.add('smooth'));
             break;
         case ' ':
             e.preventDefault();
@@ -116,7 +122,13 @@ window.addEventListener('keydown', (e) => {
 
 window.addEventListener('keyup', (e) => {
     switch (e.key) {
-        case 'Shift':
+        case 'S':
+        case 's':
+            e.preventDefault();
+            document.querySelectorAll('canvas').forEach(e => e.classList.remove('smooth'));
+            break;
+        case 'F':
+        case 'f':
         case ' ':
             e.preventDefault();
             document.getElementById('dithered').classList.remove('hidden');
@@ -129,3 +141,16 @@ window.addEventListener('keyup', (e) => {
 // --- Init ---
 
 updateImageInfo();
+
+// Load default image on page load
+window.addEventListener('load', () => {
+    fetch('test-imgs/rainbow_granger.png')
+        .then(res => res.blob())
+        .then(blob => {
+            const file = new File([blob], 'rainbow_granger.png', { type: 'image/png' });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            document.getElementById('fileInput').files = dataTransfer.files;
+            document.getElementById('fileInput').dispatchEvent(new Event('change', { bubbles: true }));
+        });
+});
