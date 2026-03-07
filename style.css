@@ -12,6 +12,17 @@ body {
     overflow: hidden;
 }
 
+h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
     width: 10px;
@@ -48,52 +59,34 @@ body {
     background: #252525;
     border-right: 1px solid #333;
     padding: 20px;
+    gap: 10px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-}
-
-#leftPanel h2 {
-    font-size: 18px;
-    margin-bottom: 15px;
-    font-weight: 600;
-}
-
-#leftPanel h3 {
-    font-size: 14px;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    font-weight: 600;
 }
 
 #buttonGroup {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-bottom: 15px;
-}
-
-#buttonGroup .btn {
-    width: 100%;
-    margin: 0;
 }
 
 #imageInfo {
     font-size: 12px;
     color: #999;
-    padding: 12px 0;
-    margin-bottom: 15px;
+    padding: 10px 0;
     border-top: 1px solid #333;
 }
 
 #imageList {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
+    gap: 8px;
 }
 
 .image-item {
     padding: 10px;
-    margin-bottom: 8px;
     background: #1a1a1a;
     border: 1px solid #333;
     border-radius: 4px;
@@ -102,46 +95,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.btn {
-    background: #333;
-    border: 1px solid #444;
-    color: #e0e0e0;
-    padding: 10px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background 0.2s;
-    display: block;
-}
-
-.btn:hover {
-    background: #444;
-}
-
-.btn.primary {
-    background: #4a9eff;
-    border-color: #4a9eff;
-}
-
-.btn.primary:hover {
-    background: #3a8eef;
-}
-
-button {
-    background: #333;
-    border: 1px solid #444;
-    color: #e0e0e0;
-    padding: 20px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 18px;
-    transition: background 0.2s;
-}
-
-button:hover {
-    background: #444;
 }
 
 .image-item:hover {
@@ -153,7 +106,29 @@ button:hover {
     border-color: #4a9eff;
 }
 
-.image-item.voted {
+button {
+    background: #333;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+    display: block;
+}
+
+button:hover {
+    background: #444;
+}
+
+button.primary {
+    background: #4a9eff;
+    border-color: #4a9eff;
+}
+
+button.primary:hover {
+    background: #3a8eef;
 }
 
 .image-name {
@@ -177,16 +152,11 @@ button:hover {
     background: #252525;
     border-right: 1px solid #333;
     padding: 20px;
+    gap: 10px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     max-width: 400px;
-}
-
-#middlePanel p {
-    font-size: 12px;
-    color: #999;
-    margin-bottom: 15px;
 }
 
 #sourceCanvas {
@@ -204,18 +174,11 @@ button:hover {
     display: flex;
     flex-direction: column;
     padding: 20px;
+    gap: 10px;
     overflow: hidden;
 }
 
-#compareArea {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    overflow: hidden;
-}
-
-#ditheredWrapper {
+#viewWrapper {
     flex: 1;
     display: flex;
     align-items: center;
@@ -223,7 +186,7 @@ button:hover {
     overflow: hidden;
 }
 
-#dithered {
+#ditheredView {
     flex: 1;
     position: relative;
     height: 100%;
@@ -234,8 +197,8 @@ button:hover {
     display: none !important;
 }
 
-#mappedPreview,
-#sourcePreview {
+#mappedView,
+#sourceView {
     display: flex;
 }
 
@@ -245,13 +208,6 @@ button:hover {
     align-items: center;
     height: 100%;
     width: 100%;
-}
-
-.canvas-container p {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    text-align: center;
 }
 
 .canvas-container canvas {
@@ -272,7 +228,8 @@ canvas.smooth {
     gap: 8px;
     overflow-x: auto;
     padding: 10px;
-    align-self: center;
+    width: 100%;
+    justify-content: center;
 }
 
 #carouselThumbs canvas {
@@ -318,12 +275,10 @@ canvas.smooth {
 #votingButtonGroup {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
 }
 
-#votingButtonGroup .btn {
+#votingButtonGroup button {
     flex: 1;
-    margin: 0;
 }
 
 #carouselThumbs .thumbnail-wrapper.voted-algorithm::after {
@@ -366,6 +321,7 @@ canvas.smooth {
     border: 1px solid #333;
     border-radius: 8px;
     padding: 30px;
+    gap: 30px;
     max-width: 800px;
     width: 90%;
     max-height: 85vh;
@@ -373,33 +329,9 @@ canvas.smooth {
     flex-direction: column;
 }
 
-#resultsContent h2 {
-    margin-bottom: 20px;
-    flex-shrink: 0;
-}
-
 #resultsData {
     flex: 1;
     overflow-y: auto;
-    margin-bottom: 20px;
-}
-
-#resultsContent .btn {
-    flex-shrink: 0;
-}
-
-.result-item {
-    background: #1a1a1a;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    border-left: 3px solid #4a9eff;
-}
-
-.result-item h3 {
-    margin-bottom: 8px;
-    font-size: 14px;
-    font-weight: 600;
 }
 
 .results-table {
@@ -417,7 +349,6 @@ canvas.smooth {
 
 .results-name {
     font-size: 14px;
-    font-weight: 500;
     color: #e0e0e0;
     white-space: nowrap;
     overflow: hidden;
@@ -452,32 +383,4 @@ canvas.smooth {
 
 .result-bar-fill.has-content {
     padding: 0 8px;
-}
-
-#noImages {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: #666;
-    font-size: 16px;
-}
-
-#noImages button {
-    margin-top: 20px;
-}
-
-#instructions {
-    background: #252525;
-    border: 1px solid #333;
-    border-radius: 4px;
-    padding: 12px;
-    margin-bottom: 15px;
-    font-size: 12px;
-    color: #999;
-}
-
-#instructions strong {
-    color: #e0e0e0;
 }

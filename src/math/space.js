@@ -1,54 +1,4 @@
-export function closestLabIdx(pixel, palette, useCRA = false) {
-    let minDist = Infinity;
-    let closestIndex = 0;
-    
-    const k = 0.35;
-
-    for (let i = 0; i < palette.length; i++) {
-
-        const color = palette[i];
-
-        const dL = color[0] - pixel[0];
-        const dA = color[1] - pixel[1];
-        const dB = color[2] - pixel[2];
-
-        const chromaAlign = pixel[1]*color[1] + pixel[2]*color[2];
-
-        let dist = 2*dL*dL + dA*dA + dB*dB;
-        if (useCRA) dist -= k * chromaAlign;
-
-        if (dist < minDist) {
-            minDist = dist;
-            closestIndex = i;
-        }
-    }
-
-    return closestIndex;
-}
-
-export function closestRGBIdx(pixel, palette) {
-    let minDist = Infinity;
-    let closestIndex = 0;
-
-    for (let i = 0; i < palette.length; i++) {
-        const color = palette[i];
-        
-        const dR = color[0] - pixel[0];
-        const dG = color[1] - pixel[1];
-        const dB = color[2] - pixel[2];
-        
-        const dist = dR*dR + dG*dG + dB*dB;
-
-        if (dist < minDist) {
-            minDist = dist;
-            closestIndex = i;
-        }
-    }
-
-    return closestIndex;
-}
-
-
+export const SPACE = { RGB: 'RGB', lRGB: 'lRGB', CIELAB: 'CIELAB', OKLAB: 'OKLAB' };
 
 export function hex2rgb(hex) {
   hex = hex.replace('#','');
@@ -144,13 +94,3 @@ export function lrgb2oklab(r, g, b, out) {
 export function rgb2oklab(r, g, b, out) {
     lrgb2oklab(v2lrgb(r), v2lrgb(g), v2lrgb(b), out);
 }
-
-
-
-// Floyd-Steinberg error diffusion
-export const weightsFloyd = [
-    { dx: 1, dy: 0, weight: 7 / 16 },
-    { dx: -1, dy: 1, weight: 3 / 16 },
-    { dx: 0, dy: 1, weight: 5 / 16 },
-    { dx: 1, dy: 1, weight: 1 / 16 }
-];

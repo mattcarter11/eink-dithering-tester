@@ -93,23 +93,24 @@ window.addEventListener('keydown', (e) => {
             e.preventDefault();
             clearVote();
             break;
-        case 'F':
-        case 'f':
+        case 'A':
+        case 'a':
             e.preventDefault();
-            document.getElementById('dithered').classList.add('hidden');
-            document.getElementById('sourcePreview').classList.add('hidden');
-            document.getElementById('mappedPreview').classList.remove('hidden');
+            showView('mappedView');
             break;
         case 'S':
         case 's':
             e.preventDefault();
             document.querySelectorAll('canvas').forEach(e => e.classList.add('smooth'));
             break;
+        case 'D':
+        case 'd':
+            e.preventDefault();
+            showView('inGammutView');
+            break;
         case ' ':
             e.preventDefault();
-            document.getElementById('dithered').classList.add('hidden');
-            document.getElementById('sourcePreview').classList.remove('hidden');
-            document.getElementById('mappedPreview').classList.add('hidden');
+            showView('sourceView');
             break;
         default:
             if (/^[1-9]$/.test(e.key)) {
@@ -127,16 +128,24 @@ window.addEventListener('keyup', (e) => {
             e.preventDefault();
             document.querySelectorAll('canvas').forEach(e => e.classList.remove('smooth'));
             break;
-        case 'F':
-        case 'f':
+        case 'A':
+        case 'a':
+        case 'D':
+        case 'd':
         case ' ':
             e.preventDefault();
-            document.getElementById('dithered').classList.remove('hidden');
-            document.getElementById('sourcePreview').classList.add('hidden');
-            document.getElementById('mappedPreview').classList.add('hidden');
+            showView('ditheredView');
             break;
     }
 });
+
+function showView(id) {
+    document.getElementById('ditheredView').classList.add('hidden');
+    document.getElementById('sourceView').classList.add('hidden');
+    document.getElementById('mappedView').classList.add('hidden');
+    document.getElementById('inGammutView').classList.add('hidden');
+    document.getElementById(id).classList.remove('hidden');
+}
 
 // --- Init ---
 

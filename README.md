@@ -62,9 +62,10 @@ Key      | Usage      | Description
 ↑/↓      | Navigation | Navigate between images
 ←/→      | Navigation | Cycle through dithering algorithms
 1–9      | Navigation | Jump directly to algorithm by number
-Space    | Viewing    | Hold to preview source image
-s/S      | Viewing    | Show smoothed image
-f/F      | Viewing    | Flat map of closest colors (without dithering)
+Space    | Viewing    | Hold to view source image
+a/a      | Viewing    | Show in gammut palette pixels
+s/S      | Viewing    | Show smoothed dithered image
+d/D      | Viewing    | Flat map to closest palette colors (without dithering)
 Enter    | Votting    | Submit vote for current algorithm
 Delete   | Votting    | Clear vote for current image
 

@@ -1,20 +1,16 @@
 import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
 import { state, addCanvasContainer, clearCanvasContainers, setSelectedAlgorithm } from "./state.js";
-import { updateMappedPreview } from "./ui.js";
+import { updateMappedView, updateInGamutView } from "./ui.js";
 
 const carousleThumbs = document.getElementById('carouselThumbs');
-const ditheredDiv    = document.getElementById('dithered');
+const ditheredDiv    = document.getElementById('ditheredView');
 
 // Creates a canvas container + matching thumbnail for one algorithm, appends
 // both to the DOM, and registers the thumb click handler.
-function createCanvasContainer(title) {
+function createCanvasContainer() {
     const container = document.createElement('div');
     container.className = 'canvas-container';
     if (state.canvasContainers.length === 0) container.classList.add('active');
-
-    const label = document.createElement('p');
-    label.textContent = title;
-    container.appendChild(label);
 
     const canvas = document.createElement('canvas');
     container.appendChild(canvas);
@@ -41,17 +37,19 @@ export function initializeCanvases() {
     clearCanvasContainers();
     ditheredDiv.innerHTML    = '';
     carousleThumbs.innerHTML = '';
-    configs.forEach(config => createCanvasContainer(config.name));
+    configs.forEach(_ => createCanvasContainer());
 }
 
 // Makes the canvas at `index` visible and deactivates all others.
 export function showCanvas(index) {
     setSelectedAlgorithm(index);
+    document.getElementById('confTitle').innerText = configs[index].name;
     state.canvasContainers.forEach((c, i) => c.classList.toggle('hidden', i != index));
     Array.from(carousleThumbs.children).forEach((wrapper, i) => {
         wrapper.querySelector('canvas').classList.toggle('selected', i === index);
     });
-    updateMappedPreview();
+    updateMappedView();
+    updateInGamutView();
 }
 
 // Copies `sourceCanvas` into the thumbnail at `index` and updates its timing label.

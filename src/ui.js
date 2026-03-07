@@ -1,44 +1,34 @@
 import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
 import { state } from "./state.js";
-import { drawFitImage, processImage } from "./dither.js";
+import { drawFitImage, processImageAndUpdateCanvas } from "./dither.js";
 import { showCanvas, updateThumbnail } from "./canvas.js";
 import { updateVoteIndicators } from "./voting.js";
+import { hex2rgb } from "./math/space.js";
+import { buildGamut } from "./math/gamut.js"
 
-const sourcePreview = document.getElementById('sourcePreview');
-const mappedPreview = document.getElementById('mappedPreview');
 const sourceCanvas  = document.getElementById('sourceCanvas');
-const sourceCtx     = sourceCanvas.getContext('2d');
+const srcViewCanvas = document.querySelector('#sourceView canvas');
+const mappedCanvas = document.querySelector('#mappedView canvas');
+const inGammutCanvas = document.querySelector('#inGammutView canvas');
 
 // Redraws the source image and re-runs all dithering algorithms for the current image.
 export function renderCurrentImage() {
     if (state.images.length === 0) return;
 
     const img = state.images[state.currentImageIndex].image;
-
+    
     // Draw into the main source canvas
     sourceCanvas.width  = DISPLAY_WIDTH;
     sourceCanvas.height = DISPLAY_HEIGHT;
-    sourceCtx.clearRect(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-    drawFitImage(sourceCtx, img);
+    drawFitImage(sourceCanvas.getContext('2d'), img);
 
-    // Rebuild the source preview panel (shown on spacebar hold)
-    const previewCanvas = document.createElement('canvas');
-    previewCanvas.width  = DISPLAY_WIDTH;
-    previewCanvas.height = DISPLAY_HEIGHT;
-    drawFitImage(previewCanvas.getContext('2d'), img);
-
-    sourcePreview.innerHTML = '';
-    const previewTitle = document.createElement('p');
-    previewTitle.textContent = 'Source Image';
-    sourcePreview.appendChild(previewTitle);
-    sourcePreview.appendChild(previewCanvas);
-
-    updateMappedPreview();
+    // Rebuild the source view panel (shown on spacebar hold)
+    updateSourceView();
 
     // Run every algorithm and update its canvas + thumbnail
     configs.forEach((conf, index) => {
         const canvas  = state.canvasContainers[index].querySelector('canvas');
-        const elapsed = processImage(img, conf, canvas);
+        const elapsed = processImageAndUpdateCanvas(img, conf, canvas);
         updateThumbnail(index, canvas, elapsed);
     });
 
@@ -47,22 +37,46 @@ export function renderCurrentImage() {
     updateVoteIndicators();
 }
 
-export function updateMappedPreview() {
-    // Rebuild the mapped preview panel (shown on shift hold)
-    const mappedCanvas = document.createElement('canvas');
-    mappedCanvas.width  = DISPLAY_WIDTH;
-    mappedCanvas.height = DISPLAY_HEIGHT;
+function updateSourceView() {
+    srcViewCanvas.width  = DISPLAY_WIDTH;
+    srcViewCanvas.height = DISPLAY_HEIGHT;
 
     const img = state.images[state.currentImageIndex].image;
-    drawFitImage(mappedCanvas.getContext('2d'), img);
+    drawFitImage(srcViewCanvas.getContext('2d'), img);
+}
 
-    mappedPreview.innerHTML = '';
-    const mappedTitle = document.createElement('p');
-    mappedTitle.textContent = 'Mapped Image (no dithering)';
-    mappedPreview.appendChild(mappedTitle);
-    mappedPreview.appendChild(mappedCanvas);
+export function updateMappedView() {
+    const img = state.images[state.currentImageIndex].image;
+    const config = configs[state.selectedAlgorithmIndex];
+    processImageAndUpdateCanvas(img, config, mappedCanvas, true);
+}
 
-    processImage(img, configs[state.selectedAlgorithmIndex], mappedCanvas, true);
+export function updateInGamutView() {
+    const img = state.images[state.currentImageIndex].image;
+    const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
+    const gamut = buildGamut(palette);
+
+    inGammutCanvas.width  = DISPLAY_WIDTH;
+    inGammutCanvas.height = DISPLAY_HEIGHT;
+    const ctx = inGammutCanvas.getContext('2d');
+
+    ctx.drawImage(img, 0, 0);
+    const imageData = ctx.getImageData(0, 0, inGammutCanvas.width, inGammutCanvas.height);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        if (!gamut.isInside([r, g, b])) {
+            data[i]     = 0;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
 }
 
 // Rebuilds the image list sidebar, marking the active image and any voted ones.

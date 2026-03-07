@@ -1,3 +1,4 @@
+import { SPACE } from "./math/space.js";
 import { createConfig } from "./dither.js";
 
 // --- Display ---
@@ -24,9 +25,6 @@ export const palettes = {
 
 export { wenting }
 
-// --- Color spaces ---
-export const SPACE = { RGB: 'RGB', lRGB: 'lRGB', CIELAB: 'CIELAB', OKLAB: 'OKLAB' };
-
 // --- Configs ---
 
 export const configs = [
@@ -43,11 +41,11 @@ export const configs = [
 
 
     /* D: CEILAB   E: any   CRA: off */
-    // createConfig(rgb, SPACE.CIELAB, SPACE.RGB), // Unsaturated because its not the real palette
+    createConfig(rgb, SPACE.CIELAB, SPACE.RGB), // Unsaturated because its not the real palette
     // createConfig(rgb, SPACE.CIELAB, SPACE.lRGB), // Unsaturated because its not the real palette
     // createConfig(rgb, SPACE.CIELAB, SPACE.CIELAB), // Unsaturated because its not the real palette
     
-    // createConfig(wenting, SPACE.CIELAB, SPACE.RGB), // Lost of detail because out of palette gammut pixels
+    createConfig(wenting, SPACE.CIELAB, SPACE.RGB), // Lost of detail because out of palette gammut pixels
     // createConfig(wenting, SPACE.CIELAB, SPACE.lRGB), // Lost of detail because out of palette gammut pixels
     // createConfig(wenting, SPACE.CIELAB, SPACE.CIELAB), // Lost of detail because out of palette gammut pixels
 
@@ -63,9 +61,9 @@ export const configs = [
 
 
     /* D: OKLAB   E: any  CRA: off*/
-    createConfig(full, SPACE.OKLAB, SPACE.RGB),
-    createConfig(full, SPACE.OKLAB, SPACE.lRGB),
-    createConfig(full, SPACE.OKLAB, SPACE.OKLAB),
+    // createConfig(full, SPACE.OKLAB, SPACE.RGB),
+    // createConfig(full, SPACE.OKLAB, SPACE.lRGB),
+    // createConfig(full, SPACE.OKLAB, SPACE.OKLAB),
 
 
     /* D: OKLAB   E: any  CRA: off*/

@@ -22,7 +22,7 @@ export function drawFitImage(ctx, img, preboost = false) {
 
 // Runs the dithering algorithm described by `algorithm` on `img` and writes
 // the result to `outputCanvas`. Returns the elapsed time in ms.
-export function processImage(img, config, outputCanvas, noDither = false) {
+export function processImageAndUpdateCanvas(img, config, outputCanvas, noDither = false) {
     outputCanvas.width  = DISPLAY_WIDTH;
     outputCanvas.height = DISPLAY_HEIGHT;
     const ctx = outputCanvas.getContext('2d');

@@ -1,5 +1,13 @@
-import { weightsFloyd, hex2rgb, rgb2lrgb, rgb2cielab, rgb2oklab, lrgb2cielab, lrgb2oklab, closestLabIdx, closestRGBIdx } from "./math.js";
-import { SPACE, wenting } from "../config.js";
+import { SPACE, hex2rgb, rgb2lrgb, rgb2cielab, rgb2oklab, lrgb2cielab, lrgb2oklab } from "../math/space.js";
+import { closestLabIdx, closestRGBIdx } from "../math/distance.js";
+import { wenting } from "../config.js";
+
+const weightsFloyd = [
+    { dx: 1, dy: 0, weight: 7 / 16 },
+    { dx: -1, dy: 1, weight: 3 / 16 },
+    { dx: 0, dy: 1, weight: 5 / 16 },
+    { dx: 1, dy: 1, weight: 1 / 16 }
+];
 
 function convertPalette(hexPalette, space) {
     switch (space) {
@@ -34,10 +42,10 @@ function converPixel(pixel, fromSpace, toSpace) {
     throw Error(`From ${fromSpace} to ${toSpace} not supported`);
 }
 
-export function dither(data, width, height, factor, palette, errSpace, distSpace, useCRA) {
+export function dither(data, width, height, factor, hexPalette, errSpace, distSpace, useCRA) {
     const spectraPalette = wenting.map(hex2rgb);
-    const errPalette = convertPalette(palette, errSpace);
-    const distPalette = convertPalette(palette, distSpace);
+    const errPalette = convertPalette(hexPalette, errSpace);
+    const distPalette = convertPalette(hexPalette, distSpace);
 
     // We pad to avoid bounds checking when distributing the error
     const paddedW = width + 2, paddedH = height + 1;
