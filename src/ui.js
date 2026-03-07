@@ -59,8 +59,8 @@ export function updateInGamutView() {
     inGammutCanvas.width  = DISPLAY_WIDTH;
     inGammutCanvas.height = DISPLAY_HEIGHT;
     const ctx = inGammutCanvas.getContext('2d');
+    drawFitImage(ctx, img);
 
-    ctx.drawImage(img, 0, 0);
     const imageData = ctx.getImageData(0, 0, inGammutCanvas.width, inGammutCanvas.height);
     const data = imageData.data;
 
