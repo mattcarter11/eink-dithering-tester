@@ -92,5 +92,6 @@ export function lrgb2oklab(r, g, b, out) {
 }
 
 export function rgb2oklab(r, g, b, out) {
-    lrgb2oklab(v2lrgb(r), v2lrgb(g), v2lrgb(b), out);
+    rgb2lrgb(r, g, b, out);
+    lrgb2oklab(out[0], out[1], out[2], out);
 }
