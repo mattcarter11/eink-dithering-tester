@@ -1,6 +1,6 @@
 import { SPACE, hex2rgb, rgb2lrgb, rgb2cielab, rgb2oklab, lrgb2cielab, lrgb2oklab } from "../math/space.js";
-import { closestLabIdx, closestRGBIdx } from "../math/distance.js";
-import { wenting } from "../config.js";
+import { closestRGBIdx, closestCIELABIdx, closestOKLABIdx } from "../math/distance.js";
+import { spectra } from "../config.js";
 
 const weightsFloyd = [
     { dx: 1, dy: 0, weight: 7 / 16 },
@@ -32,18 +32,48 @@ function converPixel(pixel, fromSpace, toSpace) {
                 case SPACE.CIELAB: rgb2cielab(pixel[0], pixel[1], pixel[2], pixel); return;
                 case SPACE.OKLAB: rgb2oklab(pixel[0], pixel[1], pixel[2], pixel); return;
             }
+            break;
         case SPACE.lRGB:
             switch (toSpace) {
+                case SPACE.lRGB: return;
                 case SPACE.CIELAB: lrgb2cielab(pixel[0], pixel[1], pixel[2], pixel); return;
                 case SPACE.OKLAB: lrgb2oklab(pixel[0], pixel[1], pixel[2], pixel); return;
             }
+            break;
     }
 
     throw Error(`From ${fromSpace} to ${toSpace} not supported`);
 }
 
-export function dither(data, width, height, factor, hexPalette, errSpace, distSpace, useCRA) {
-    const spectraPalette = wenting.map(hex2rgb);
+function closestIdx(space, pixel, palette) {
+    switch (space) {
+        case SPACE.CIELAB: return closestCIELABIdx(pixel, palette)
+        case SPACE.OKLAB: return closestOKLABIdx(pixel, palette)
+        default: return closestRGBIdx(pixel, palette);
+    }
+}
+
+/**
+ * Floyd–Steinberg dithering with optional blue-noise pre-dithering.
+ *
+ * Blue noise works by adding a spatially-uniform high-frequency offset to each
+ * pixel *before* quantization.  This breaks up the low-frequency error patterns
+ * that FSD tends to create (the diagonal "worms") without sacrificing the
+ * overall accuracy that pure ordered dithering lacks.
+ *
+ * The offset is scaled by `blueNoiseFactor` × one quantization step width so
+ * that it nudges pixels across palette boundaries organically.
+ *
+ * @param {Uint8ClampedArray} data - RGB image data
+ * @param {number} width - Image widht
+ * @param {number} height - Image heigh
+ * @param {number} factor - FSD error diffusion strength (0 = none, 1 = full)
+ * @param {string[]} hexPalette - Pallete used to dither
+ * @param {string} errSpace - Color space for error accumulation
+ * @param {string} distSpace - Color space for nearest-color lookup
+ */
+export function dither(data, width, height, factor, hexPalette, errSpace, distSpace) {
+    const spectraPalette = spectra.map(hex2rgb);
     const errPalette = convertPalette(hexPalette, errSpace);
     const distPalette = convertPalette(hexPalette, distSpace);
 
@@ -52,7 +82,7 @@ export function dither(data, width, height, factor, hexPalette, errSpace, distSp
 
     // float32 buff for better speed
     const errBuff = new Float32Array(paddedW * paddedH * 3).fill(0)
-    const pixel = new Float32Array(3).fill(0);
+    const errPixel = new Float32Array(3).fill(0);
     const distPixel = new Float32Array(3).fill(0)
 
     for (let y = 0; y < height; y++) {
@@ -61,44 +91,42 @@ export function dither(data, width, height, factor, hexPalette, errSpace, distSp
             const dIdx = (row + x) * 4;
 
             // Get the image pixel in RGB
-            pixel[0] = data[dIdx];      // R
-            pixel[1] = data[dIdx + 1];  // G
-            pixel[2] = data[dIdx + 2];  // B
+            errPixel[0] = data[dIdx];      // R
+            errPixel[1] = data[dIdx + 1];  // G
+            errPixel[2] = data[dIdx + 2];  // B
 
             // Convert to the error diffusion color space
-            converPixel(pixel, SPACE.RGB, errSpace);
+            converPixel(errPixel, SPACE.RGB, errSpace);
 
             // Add the error from previous pixels
             if (factor > 0) {
                 const eIdx = (y * paddedW + x) * 3;
-                pixel[0] += errBuff[eIdx];
-                pixel[1] += errBuff[eIdx+1];
-                pixel[2] += errBuff[eIdx+2];
-
+                errPixel[0] += errBuff[eIdx];
+                errPixel[1] += errBuff[eIdx+1];
+                errPixel[2] += errBuff[eIdx+2];
+                
                 if (errSpace == SPACE.lRGB) {
-                    pixel[0] = Math.max(0, Math.min(1, pixel[0]));
-                    pixel[1] = Math.max(0, Math.min(1, pixel[1]));
-                    pixel[2] = Math.max(0, Math.min(1, pixel[2]));
+                    errPixel[0] = Math.max(0, Math.min(1, errPixel[0]));
+                    errPixel[1] = Math.max(0, Math.min(1, errPixel[1]));
+                    errPixel[2] = Math.max(0, Math.min(1, errPixel[2]));
                 }
             }
 
-
             // Calculate pixel for distance calculation (including error)
-            distPixel[0] = pixel[0]
-            distPixel[1] = pixel[1]
-            distPixel[2] = pixel[2]
+            distPixel[0] = errPixel[0]
+            distPixel[1] = errPixel[1]
+            distPixel[2] = errPixel[2]
             converPixel(distPixel, errSpace, distSpace);
 
             // Find closest color
-            const distRGB = distSpace == SPACE.RGB || distSpace == SPACE.lRGB;
-            const paletteIdx = distRGB ? closestRGBIdx(distPixel, distPalette) : closestLabIdx(distPixel, distPalette, useCRA);
+            const paletteIdx = closestIdx(distSpace, distPixel, distPalette);
             const difPixel = errPalette[paletteIdx];
             
             // Distribute the error to the next pixels
             if (factor > 0) { 
-                const err0 = (pixel[0] - difPixel[0]) * factor;
-                const err1 = (pixel[1] - difPixel[1]) * factor;
-                const err2 = (pixel[2] - difPixel[2]) * factor;
+                const err0 = (errPixel[0] - difPixel[0]) * factor;
+                const err1 = (errPixel[1] - difPixel[1]) * factor;
+                const err2 = (errPixel[2] - difPixel[2]) * factor;
 
                 for (const w of weightsFloyd) {
                     const nx = x + w.dx;

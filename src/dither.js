@@ -37,7 +37,7 @@ export function processImageAndUpdateCanvas(img, config, outputCanvas, noDither 
 
     const factor = noDither ? 0 : DITHER_FACTOR;
 
-    dither(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, factor, config.palette, config.errSpace, config.distSpace, config.useCRA);
+    dither(data, DISPLAY_WIDTH, DISPLAY_HEIGHT, factor, config.palette, config.errSpace, config.distSpace);
     
     ctx.putImageData(imageData, 0, 0);
 
@@ -45,14 +45,13 @@ export function processImageAndUpdateCanvas(img, config, outputCanvas, noDither 
 }
 
 
-export function createConfig(palette, distSpace, errSpace, preboost = false, useCRA = false) {
+export function createConfig(palette, distSpace, errSpace, preboost = false) {
     const paletteName = Object.keys(palettes).find(k => palettes[k] === palette);
-    let name = `E: ${errSpace}  D: ${distSpace}- 🎨 ${paletteName}`
+    let name = `E: ${errSpace}  D: ${distSpace} - 🎨 ${paletteName}`
     
     let mods = [];
     if (preboost) mods.push('⬆️');
-    if (useCRA) mods.push('CRA');
     if (mods.length) name += ' - ' + mods.join(' & ');
 
-    return { name, palette, errSpace, distSpace, preboost, useCRA };
+    return { name, palette, errSpace, distSpace, preboost };
 }
