@@ -21,12 +21,12 @@ function closeShortcuts() {
 }
 
 
-// --- File input ---
+// --- File loading helper ---
 
-document.getElementById('fileInput').addEventListener('change', (e) => {
-    const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+function loadFiles(files) {
+    const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
 
-    if (files.length === 0) {
+    if (imageFiles.length === 0) {
         alert('No image files found!');
         return;
     }
@@ -35,11 +35,11 @@ document.getElementById('fileInput').addEventListener('change', (e) => {
     initializeCanvases();
 
     let loadedCount = 0;
-    files.forEach(file => {
+    imageFiles.forEach(file => {
         const img  = new Image();
         img.onload = () => {
             addImage({ name: file.name, image: img });
-            if (++loadedCount === files.length) {
+            if (++loadedCount === imageFiles.length) {
                 sortImages();
                 renderCurrentImage();
                 updateImageList();
@@ -47,6 +47,42 @@ document.getElementById('fileInput').addEventListener('change', (e) => {
         };
         img.src = URL.createObjectURL(file);
     });
+}
+
+// --- File input ---
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+    loadFiles(e.target.files);
+});
+
+// --- Drag and drop ---
+
+const dropOverlay = document.getElementById('dropOverlay');
+
+document.addEventListener('dragenter', (e) => {
+    if (e.dataTransfer && Array.from(e.dataTransfer.items).some(i => i.kind === 'file' && i.type.startsWith('image/'))) {
+        e.preventDefault();
+        dropOverlay.classList.add('active');
+    }
+});
+
+document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+document.addEventListener('dragleave', (e) => {
+    // Only hide overlay when leaving the window entirely
+    if (!e.relatedTarget || e.relatedTarget === document.documentElement) {
+        dropOverlay.classList.remove('active');
+    }
+});
+
+document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropOverlay.classList.remove('active');
+    if (e.dataTransfer?.files?.length) {
+        loadFiles(e.dataTransfer.files);
+    }
 });
 
 // --- Prev / Next buttons ---

@@ -422,3 +422,28 @@ canvas.no_smooth {
     padding: 10px 12px;
     font-size: 13px;
 }
+
+#dropOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+#dropOverlay.active {
+    display: flex;
+}
+#dropMessage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    font-size: 1.4rem;
+    border: 2px dashed white;
+    border-radius: 12px;
+    padding: 48px 64px;
+}
