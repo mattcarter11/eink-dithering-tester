@@ -65,7 +65,7 @@ Key      | Usage      | Description
 Escape   | Naviation  | Close modal
 Space    | Viewing    | Hold to view source image
 a/a      | Viewing    | Show in gammut palette pixels
-s/S      | Viewing    | Show smoothed dithered image
+s/S      | Viewing    | Show un smoothed dithered image
 d/D      | Viewing    | Flat map to closest palette colors (without dithering)
 Enter    | Votting    | Submit vote for current algorithm
 Delete   | Votting    | Clear vote for current image

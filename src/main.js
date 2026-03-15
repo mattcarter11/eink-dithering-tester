@@ -117,7 +117,7 @@ window.addEventListener('keydown', (e) => {
         case 'S':
         case 's':
             e.preventDefault();
-            document.querySelectorAll('canvas').forEach(e => e.classList.add('smooth'));
+            document.querySelectorAll('canvas').forEach(e => e.classList.add('no_smooth'));
             break;
         case 'D':
         case 'd':
@@ -142,7 +142,7 @@ window.addEventListener('keyup', (e) => {
         case 'S':
         case 's':
             e.preventDefault();
-            document.querySelectorAll('canvas').forEach(e => e.classList.remove('smooth'));
+            document.querySelectorAll('canvas').forEach(e => e.classList.remove('no_smooth'));
             break;
         case 'A':
         case 'a':
