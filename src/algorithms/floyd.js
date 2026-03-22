@@ -35,7 +35,6 @@ function converPixel(pixel, fromSpace, toSpace) {
             break;
         case SPACE.lRGB:
             switch (toSpace) {
-                case SPACE.lRGB: return;
                 case SPACE.CIELAB: lrgb2cielab(pixel[0], pixel[1], pixel[2], pixel); return;
                 case SPACE.OKLAB: lrgb2oklab(pixel[0], pixel[1], pixel[2], pixel); return;
             }

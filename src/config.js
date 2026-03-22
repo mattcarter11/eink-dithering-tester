@@ -5,12 +5,15 @@ import { createConfig } from "./dither.js";
 
 export const DISPLAY_WIDTH  = 480;
 export const DISPLAY_HEIGHT = 800;
-export const DITHER_FACTOR  = 0.8;
+export const DITHER_FACTOR  = 0.85;
 
 // --- Palettes ---
 
 const rgb        = ['#000000', '#ffffff', '#0000ff', '#00ff00', '#ff0000', '#ffff00'];
 const wenting    = ['#2e2c42', '#d3d6cd', '#316ac1', '#5c8a5b', '#b11d19', '#d9c701'];
+const mineV1     = ['#29273a', '#d3d6cd', '#3266b3', '#398854', '#a7201b', '#d9c701'];
+const mineV2     = ['#242129', '#e1e4db', '#0d58c9', '#3c7a3b', '#b81616', '#eeda01'];
+
 const paperless  = ["#191E21", "#e8e8e8", "#2157ba", "#125f20", "#b21318", "#efde44"];
 const photoframe = ["#020202", "#bec8c8", "#05409e", "#27663c", "#871300", "#cdca00"];
 const full       = wenting.concat(rgb);
@@ -38,14 +41,12 @@ export const configs = [
     // createConfig(wenting, SPACE.RGB, SPACE.RGB),
     // createConfig(wenting, SPACE.RGB, SPACE.RGB, true),
 
-    // createConfig(full, SPACE.RGB, SPACE.RGB), // 👑 Full is best, it has more detail
-    // createConfig(full, SPACE.RGB, SPACE.RGB, true), // 👑 Full is best, it has more detail
+    // createConfig(full, SPACE.RGB, SPACE.RGB), // 👑 Full is best, it has more detail (but sometimes wenting is better)
+    // createConfig(full, SPACE.RGB, SPACE.RGB, true),
 
-    /* D: CEILAB   E: any   CRA: off */
+    /* D: CEILAB */
     createConfig(wenting, SPACE.CIELAB, SPACE.RGB), // Lost of detail because out of palette gammut pixels
     createConfig(wenting, SPACE.CIELAB, SPACE.lRGB), // Lost of detail because out of palette gammut pixels
-    createConfig(wenting, SPACE.CIELAB, SPACE.lRGB), // Lost of detail because out of palette gammut pixels
-    createConfig(wenting, SPACE.CIELAB, SPACE.CIELAB), // Lost of detail because out of palette gammut pixels
     createConfig(wenting, SPACE.CIELAB, SPACE.CIELAB), // Lost of detail because out of palette gammut pixels
 
     // createConfig(full, SPACE.CIELAB, SPACE.RGB), // 👑
@@ -53,10 +54,10 @@ export const configs = [
     // createConfig(full, SPACE.CIELAB, SPACE.CIELAB), // Blue shift
 
 
-    /* D: OKLAB   E: any  CRA: off*/
-    // createConfig(wenting, SPACE.OKLAB, SPACE.RGB),
-    // createConfig(wenting, SPACE.OKLAB, SPACE.lRGB),
-    // createConfig(wenting, SPACE.OKLAB, SPACE.OKLAB),
+    /* D: OKLAB */
+    createConfig(wenting, SPACE.OKLAB, SPACE.RGB),
+    createConfig(wenting, SPACE.OKLAB, SPACE.lRGB),
+    createConfig(wenting, SPACE.OKLAB, SPACE.OKLAB),
 
     // createConfig(full, SPACE.OKLAB, SPACE.RGB),
     // createConfig(full, SPACE.OKLAB, SPACE.lRGB),
