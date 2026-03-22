@@ -7,6 +7,23 @@ import { hex2rgb } from "./math/space.js";
 import { buildGamut } from "./math/gamut.js"
 import { getDitheredImageBin } from "./math/img2bin.js";
 
+export function showToast(type, message) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    // Trigger animation
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => container.removeChild(toast), 300);
+    }, 3000);
+}
+
 const sourceCanvas  = document.getElementById('sourceCanvas');
 const srcViewCanvas = document.querySelector('#sourceView canvas');
 const mappedCanvas = document.querySelector('#mappedView canvas');
@@ -149,8 +166,8 @@ async function sendToDisplay(ip) {
             body: bin,
             mode: 'no-cors'
         });
-        alert(`Sent to ${ip}`);
+        showToast('success', `Sent to ${ip}`);
     } catch (error) {
-        alert(`Error sending to ${ip}: ${error.message}`);
+        showToast('error', `Error sending to ${ip}: ${error.message}`);
     }
 }

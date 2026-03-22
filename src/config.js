@@ -10,9 +10,10 @@ export const DITHER_FACTOR  = 0.85;
 // --- Palettes ---
 
 const rgb        = ['#000000', '#ffffff', '#ffff00', '#ff0000', '#0000ff', '#00ff00'];
-const wenting    = ['#2e2c42', '#d3d6cd', '#d9c701', '#b11d19', '#316ac1', '#5c8a5b'];
+// const wenting    = ['#2e2c42', '#d3d6cd', '#d9c701', '#b11d19', '#316ac1', '#5c8a5b'];
 const mineV1     = ['#29273a', '#d3d6cd', '#d9c701', '#a7201b', '#3266b3', '#398854'];
-const mineV2     = ['#242129', '#e1e4db', '#eeda01', '#b81616', '#0d58c9', '#3c7a3b'];
+const wenting     = ['#242129', '#e1e4db', '#eeda01', '#b10909', '#0d54be', '#226839'];
+
 const paperless  = ["#191E21", "#e8e8e8", "#efde44", "#b21318", "#2157ba", "#125f20"];
 const photoframe = ["#020202", "#bec8c8", "#cdca00", "#871300", "#05409e", "#27663c"];
 const full       = wenting.concat(rgb);

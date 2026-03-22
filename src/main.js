@@ -2,7 +2,7 @@ import { configs } from "./config.js";
 import { state, resetState, addImage, sortImages } from "./state.js";
 import { initializeCanvases, showCanvas } from "./canvas.js";
 import { submitVote, clearVote, showResults, closeResults } from "./voting.js";
-import { renderCurrentImage, updateImageList, updateImageInfo, setupSendButtons } from "./ui.js";
+import { renderCurrentImage, updateImageList, updateImageInfo, setupSendButtons, showToast } from "./ui.js";
 
 // Expose modal controls to inline HTML handlers
 window.showResults  = showResults;
@@ -27,7 +27,7 @@ function loadFiles(files) {
     const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
 
     if (imageFiles.length === 0) {
-        alert('No image files found!');
+        showToast('error', 'No image files found!');
         return;
     }
 
