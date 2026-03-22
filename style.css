@@ -277,12 +277,15 @@ canvas.no_smooth {
     margin-top: 4px;
 }
 
-#buttonGroupRow {
+
+#buttonGroupRow,
+#sendButtons {
     display: flex;
     gap: 10px;
 }
 
-#buttonGroupRow button {
+#buttonGroupRow button,
+#sendButtons button {
     flex: 1;
 }
 

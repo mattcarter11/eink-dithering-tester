@@ -9,13 +9,12 @@ export const DITHER_FACTOR  = 0.85;
 
 // --- Palettes ---
 
-const rgb        = ['#000000', '#ffffff', '#0000ff', '#00ff00', '#ff0000', '#ffff00'];
-const wenting    = ['#2e2c42', '#d3d6cd', '#316ac1', '#5c8a5b', '#b11d19', '#d9c701'];
-const mineV1     = ['#29273a', '#d3d6cd', '#3266b3', '#398854', '#a7201b', '#d9c701'];
-const mineV2     = ['#242129', '#e1e4db', '#0d58c9', '#3c7a3b', '#b81616', '#eeda01'];
-
-const paperless  = ["#191E21", "#e8e8e8", "#2157ba", "#125f20", "#b21318", "#efde44"];
-const photoframe = ["#020202", "#bec8c8", "#05409e", "#27663c", "#871300", "#cdca00"];
+const rgb        = ['#000000', '#ffffff', '#ffff00', '#ff0000', '#0000ff', '#00ff00'];
+const wenting    = ['#2e2c42', '#d3d6cd', '#d9c701', '#b11d19', '#316ac1', '#5c8a5b'];
+const mineV1     = ['#29273a', '#d3d6cd', '#d9c701', '#a7201b', '#3266b3', '#398854'];
+const mineV2     = ['#242129', '#e1e4db', '#eeda01', '#b81616', '#0d58c9', '#3c7a3b'];
+const paperless  = ["#191E21", "#e8e8e8", "#efde44", "#b21318", "#2157ba", "#125f20"];
+const photoframe = ["#020202", "#bec8c8", "#cdca00", "#871300", "#05409e", "#27663c"];
 const full       = wenting.concat(rgb);
 export const spectra = wenting;
 
@@ -63,3 +62,7 @@ export const configs = [
     // createConfig(full, SPACE.OKLAB, SPACE.lRGB),
     // createConfig(full, SPACE.OKLAB, SPACE.OKLAB),
 ];
+
+
+// --- Displays ---
+export const displaysIp = ['192.168.1.177', '192.168.1.182']

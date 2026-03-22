@@ -2,7 +2,7 @@ import { configs } from "./config.js";
 import { state, resetState, addImage, sortImages } from "./state.js";
 import { initializeCanvases, showCanvas } from "./canvas.js";
 import { submitVote, clearVote, showResults, closeResults } from "./voting.js";
-import { renderCurrentImage, updateImageList, updateImageInfo } from "./ui.js";
+import { renderCurrentImage, updateImageList, updateImageInfo, setupSendButtons } from "./ui.js";
 
 // Expose modal controls to inline HTML handlers
 window.showResults  = showResults;
@@ -202,6 +202,7 @@ function showView(id) {
 // --- Init ---
 
 updateImageInfo();
+setupSendButtons();
 
 // Load default image on page load
 window.addEventListener('load', () => {

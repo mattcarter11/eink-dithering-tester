@@ -1,10 +1,11 @@
-import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
+import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs, displaysIp } from "./config.js";
 import { state } from "./state.js";
 import { drawFitImage, processImageAndUpdateCanvas } from "./dither.js";
 import { showCanvas, updateThumbnail } from "./canvas.js";
 import { updateVoteIndicators } from "./voting.js";
 import { hex2rgb } from "./math/space.js";
 import { buildGamut } from "./math/gamut.js"
+import { getDitheredImageBin } from "./math/img2bin.js";
 
 const sourceCanvas  = document.getElementById('sourceCanvas');
 const srcViewCanvas = document.querySelector('#sourceView canvas');
@@ -118,4 +119,38 @@ export function updateImageInfo() {
     info.textContent = state.images.length === 0
         ? ''
         : `Image ${state.currentImageIndex + 1}/${state.images.length} | Voted: ${Object.keys(state.votes).length}/${state.images.length}`;
+}
+
+export function setupSendButtons() {
+    const sendButtons = document.getElementById('sendButtons');
+    sendButtons.innerHTML = '';
+
+    displaysIp.forEach(ip => {
+        const button = document.createElement('button');
+        button.textContent = `${ip}`;
+        button.onclick = () => sendToDisplay(ip);
+        sendButtons.appendChild(button);
+    });
+}
+
+async function sendToDisplay(ip) {
+    const canvas = state.canvasContainers[state.selectedAlgorithmIndex].querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    const bin = getDitheredImageBin(data, canvas.width, canvas.height);
+
+    try {
+        await fetch(`http://${ip}/api/display/preview`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/octet-stream'
+            },
+            body: bin,
+            mode: 'no-cors'
+        });
+        alert(`Sent to ${ip}`);
+    } catch (error) {
+        alert(`Error sending to ${ip}: ${error.message}`);
+    }
 }
