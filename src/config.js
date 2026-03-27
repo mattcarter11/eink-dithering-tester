@@ -36,6 +36,8 @@ export const palettes = {
 export const configs = [
 
     /* D: RGB   E: RGB */
+    createConfig(rgb, SPACE.RGB, SPACE.RGB, true),
+
     // createConfig(wenting, SPACE.RGB, SPACE.RGB),
     // createConfig(wenting, SPACE.RGB, SPACE.RGB, true),
 
@@ -54,12 +56,12 @@ export const configs = [
 
     /* D: OKLAB */
     // createConfig(wenting, SPACE.OKLAB, SPACE.RGB),
-    // createConfig(wenting, SPACE.OKLAB, SPACE.lRGB),
-    // createConfig(wenting, SPACE.OKLAB, SPACE.OKLAB),
+    createConfig(wenting, SPACE.OKLAB, SPACE.lRGB),
+    createConfig(wenting, SPACE.OKLAB, SPACE.OKLAB),
 
     // createConfig(full, SPACE.OKLAB, SPACE.RGB),
-    // createConfig(full, SPACE.OKLAB, SPACE.lRGB),
-    // createConfig(full, SPACE.OKLAB, SPACE.OKLAB),
+    createConfig(full, SPACE.OKLAB, SPACE.lRGB),
+    createConfig(full, SPACE.OKLAB, SPACE.OKLAB),
 ];
 
 

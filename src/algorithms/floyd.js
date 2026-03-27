@@ -1,56 +1,6 @@
-import { SPACE, hex2rgb, rgb2lrgb, rgb2cielab, rgb2oklab, lrgb2cielab, lrgb2oklab } from "../math/space.js";
-import { closestRGBIdx, closestCIELABIdx, closestOKLABIdx } from "../math/distance.js";
+import { SPACE, hex2rgb } from "../math/space.js";
 import { spectra } from "../config.js";
-
-const weightsFloyd = [
-    { dx: 1, dy: 0, weight: 7 / 16 },
-    { dx: -1, dy: 1, weight: 3 / 16 },
-    { dx: 0, dy: 1, weight: 5 / 16 },
-    { dx: 1, dy: 1, weight: 1 / 16 }
-];
-
-function convertPalette(hexPalette, space) {
-    switch (space) {
-        case SPACE.lRGB:
-            return hexPalette.map(hex => { const p = hex2rgb(hex); rgb2lrgb(p[0], p[1], p[2], p); return p;});
-        case SPACE.CIELAB:
-            return hexPalette.map(hex => { const p = hex2rgb(hex); rgb2cielab(p[0], p[1], p[2], p); return p;});
-        case SPACE.OKLAB:
-            return hexPalette.map(hex => { const p = hex2rgb(hex); rgb2oklab(p[0], p[1], p[2], p); return p;});
-        default:
-            return hexPalette.map(hex2rgb);
-    }
-}
-
-function converPixel(pixel, fromSpace, toSpace) {
-    if (fromSpace == toSpace) return;
-
-    switch (fromSpace) {
-        case SPACE.RGB:
-            switch (toSpace) {
-                case SPACE.lRGB: rgb2lrgb(pixel[0], pixel[1], pixel[2], pixel); return;
-                case SPACE.CIELAB: rgb2cielab(pixel[0], pixel[1], pixel[2], pixel); return;
-                case SPACE.OKLAB: rgb2oklab(pixel[0], pixel[1], pixel[2], pixel); return;
-            }
-            break;
-        case SPACE.lRGB:
-            switch (toSpace) {
-                case SPACE.CIELAB: lrgb2cielab(pixel[0], pixel[1], pixel[2], pixel); return;
-                case SPACE.OKLAB: lrgb2oklab(pixel[0], pixel[1], pixel[2], pixel); return;
-            }
-            break;
-    }
-
-    throw Error(`From ${fromSpace} to ${toSpace} not supported`);
-}
-
-function closestIdx(space, pixel, palette) {
-    switch (space) {
-        case SPACE.CIELAB: return closestCIELABIdx(pixel, palette)
-        case SPACE.OKLAB: return closestOKLABIdx(pixel, palette)
-        default: return closestRGBIdx(pixel, palette);
-    }
-}
+import { convertPalette, converPixel, closestIdx, WEIGHTS_FLOYD} from './helper.js'
 
 /**
  * Floyd–Steinberg dithering with optional blue-noise pre-dithering.
@@ -127,14 +77,14 @@ export function dither(data, width, height, factor, hexPalette, errSpace, distSp
                 const err1 = (errPixel[1] - difPixel[1]) * factor;
                 const err2 = (errPixel[2] - difPixel[2]) * factor;
 
-                for (const w of weightsFloyd) {
+                for (const w of WEIGHTS_FLOYD) {
                     const nx = x + w.dx;
                     const ny = y + w.dy;
 
                     const nIdx = (ny * paddedW + nx) * 3;
-                    errBuff[nIdx] += err0 * w.weight;
-                    errBuff[nIdx+1] += err1 * w.weight;
-                    errBuff[nIdx+2] += err2 * w.weight;
+                    errBuff[nIdx] += err0 * w.w;
+                    errBuff[nIdx+1] += err1 * w.w;
+                    errBuff[nIdx+2] += err2 * w.w;
                 }
             }
 

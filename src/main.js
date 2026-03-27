@@ -21,7 +21,7 @@ function closeShortcuts() {
 }
 
 
-// --- File loading helper ---
+// ─── File loading helper ──────────────────────────────────────────────────────
 
 function loadFiles(files) {
     const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
@@ -49,13 +49,13 @@ function loadFiles(files) {
     });
 }
 
-// --- File input ---
+// ─── File input ───────────────────────────────────────────────────────────────
 
 document.getElementById('fileInput').addEventListener('change', (e) => {
     loadFiles(e.target.files);
 });
 
-// --- Drag and drop ---
+// ─── Drag and drop ────────────────────────────────────────────────────────────
 
 const dropOverlay = document.getElementById('dropOverlay');
 
@@ -85,7 +85,7 @@ document.addEventListener('drop', (e) => {
     }
 });
 
-// --- Prev / Next buttons ---
+// ─── Prev / Next buttons ──────────────────────────────────────────────────────
 
 document.getElementById('prevBtn').addEventListener('click', () => {
     const index = (state.selectedAlgorithmIndex - 1 + configs.length) % configs.length;
@@ -97,7 +97,8 @@ document.getElementById('nextBtn').addEventListener('click', () => {
     showCanvas(index);
 });
 
-// --- Keyboard shortcuts ---
+// ─── Keyboard shortcuts ───────────────────────────────────────────────────────
+
 window.addEventListener('keydown', (e) => {
     if (state.images.length === 0 || e.target.tagName === 'INPUT') return;
 
@@ -199,7 +200,7 @@ function showView(id) {
     document.getElementById(id).classList.remove('hidden');
 }
 
-// --- Init ---
+// ─── Init ─────────────────────────────────────────────────────────────────────
 
 updateImageInfo();
 setupSendButtons();

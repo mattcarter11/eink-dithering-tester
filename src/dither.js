@@ -1,6 +1,7 @@
 import { DISPLAY_WIDTH, DISPLAY_HEIGHT, DITHER_FACTOR, palettes } from "./config.js";
 import { dither } from "./algorithms/floyd.js";
 
+
 // Returns { width, height, x, y } to fit `img` inside the display, centered.
 function getScaledDimensions(img) {
     const scale = Math.max(DISPLAY_WIDTH / img.width, DISPLAY_HEIGHT / img.height);
