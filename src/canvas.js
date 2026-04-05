@@ -1,7 +1,7 @@
 import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
 import { state, addCanvasContainer, clearCanvasContainers, setSelectedAlgorithm } from "./state.js";
 
-const carousleThumbs = document.getElementById('carouselThumbs');
+const carouselThumbs = document.getElementById('carouselThumbs');
 const ditheredDiv    = document.getElementById('ditheredView');
 
 // Creates a canvas container + matching thumbnail for one algorithm, appends
@@ -22,7 +22,7 @@ function createCanvasContainer() {
     const thumbWrapper = document.createElement('div');
     thumbWrapper.className = 'thumbnail-wrapper';
     thumbWrapper.appendChild(thumb);
-    carousleThumbs.appendChild(thumbWrapper);
+    carouselThumbs.appendChild(thumbWrapper);
 
     const index = state.canvasContainers.length;
     thumb.addEventListener('click', () => showCanvas(index));
@@ -35,7 +35,7 @@ function createCanvasContainer() {
 export function initializeCanvases() {
     clearCanvasContainers();
     ditheredDiv.innerHTML    = '';
-    carousleThumbs.innerHTML = '';
+    carouselThumbs.innerHTML = '';
     configs.forEach(_ => createCanvasContainer());
 }
 
@@ -44,7 +44,7 @@ export function showCanvas(index) {
     setSelectedAlgorithm(index);
     document.getElementById('confTitle').innerText = configs[index].name;
     state.canvasContainers.forEach((c, i) => c.classList.toggle('hidden', i != index));
-    Array.from(carousleThumbs.children).forEach((wrapper, i) => {
+    Array.from(carouselThumbs.children).forEach((wrapper, i) => {
         wrapper.querySelector('canvas').classList.toggle('selected', i === index);
     });
 
@@ -53,7 +53,7 @@ export function showCanvas(index) {
 
 // Copies `sourceCanvas` into the thumbnail at `index` and updates its timing label.
 export function updateThumbnail(index, sourceCanvas, elapsedMs) {
-    const thumbWrapper = carousleThumbs.children[index];
+    const thumbWrapper = carouselThumbs.children[index];
     const thumb        = thumbWrapper.querySelector('canvas');
     const thumbCtx     = thumb.getContext('2d');
     thumbCtx.clearRect(0, 0, thumb.width, thumb.height);
@@ -68,4 +68,4 @@ export function updateThumbnail(index, sourceCanvas, elapsedMs) {
     timeLabel.textContent = `${elapsedMs.toFixed(0)}ms`;
 }
 
-export { carousleThumbs };
+export { carouselThumbs };

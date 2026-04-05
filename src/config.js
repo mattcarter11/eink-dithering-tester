@@ -45,9 +45,9 @@ export const configs = [
     // createConfig(full, SPACE.RGB, SPACE.RGB, true),
 
     /* D: CEILAB */
-    // createConfig(wenting, SPACE.CIELAB, SPACE.RGB), // Lost of detail because out of palette gammut pixels
-    // createConfig(wenting, SPACE.CIELAB, SPACE.lRGB), // Lost of detail because out of palette gammut pixels
-    // createConfig(wenting, SPACE.CIELAB, SPACE.CIELAB), // Lost of detail because out of palette gammut pixels
+    // createConfig(wenting, SPACE.CIELAB, SPACE.RGB), // Loss of detail because out of palette gamut pixels
+    // createConfig(wenting, SPACE.CIELAB, SPACE.lRGB), // Loss of detail because out of palette gamut pixels
+    // createConfig(wenting, SPACE.CIELAB, SPACE.CIELAB), // Loss of detail because out of palette gamut pixels
 
     createConfig(full, SPACE.CIELAB, SPACE.RGB), // 👑
     // createConfig(full, SPACE.CIELAB, SPACE.lRGB), // Blue shift -> it should best from what i've read

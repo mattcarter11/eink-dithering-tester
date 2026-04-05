@@ -1,10 +1,15 @@
 import { configs } from "./config.js";
-import { state, resetState, addImage, sortImages } from "./state.js";
+import { state, resetState, addImage, sortImages, setCurrentImage, setSelectedAlgorithm } from "./state.js";
 import { initializeCanvases, showCanvas } from "./canvas.js";
 import { submitVote, clearVote, showResults, closeResults } from "./voting.js";
 import {
-    renderCurrentImage, updateImageList, updateImageInfo, setupSendButtons, showToast,
-    updateMappedView, updateInGamutView, updateInGamutMaskView, updateDistanceView, updateEdgeView
+    renderCurrentImage,
+    updateImageList,
+    updateImageInfo,
+    setupSendButtons,
+    showToast,
+    showView,
+    VIEW_IDS,
 } from "./ui.js";
 
 // Expose modal controls to inline HTML handlers
@@ -52,88 +57,54 @@ function loadFiles(files) {
     });
 }
 
-// ─── File input ───────────────────────────────────────────────────────────────
+function setupFileInput() {
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+        loadFiles(e.target.files);
+    });
+}
 
-document.getElementById('fileInput').addEventListener('change', (e) => {
-    loadFiles(e.target.files);
-});
+function setupDragDrop() {
+    const dropOverlay = document.getElementById('dropOverlay');
 
-// ─── Drag and drop ────────────────────────────────────────────────────────────
+    document.addEventListener('dragenter', (e) => {
+        if (e.dataTransfer && Array.from(e.dataTransfer.items).some(i => i.kind === 'file' && i.type.startsWith('image/'))) {
+            e.preventDefault();
+            dropOverlay.classList.add('active');
+        }
+    });
 
-const dropOverlay = document.getElementById('dropOverlay');
-
-document.addEventListener('dragenter', (e) => {
-    if (e.dataTransfer && Array.from(e.dataTransfer.items).some(i => i.kind === 'file' && i.type.startsWith('image/'))) {
+    document.addEventListener('dragover', (e) => {
         e.preventDefault();
-        dropOverlay.classList.add('active');
-    }
-});
+    });
 
-document.addEventListener('dragover', (e) => {
-    e.preventDefault();
-});
+    document.addEventListener('dragleave', (e) => {
+        if (!e.relatedTarget || e.relatedTarget === document.documentElement) {
+            dropOverlay.classList.remove('active');
+        }
+    });
 
-document.addEventListener('dragleave', (e) => {
-    // Only hide overlay when leaving the window entirely
-    if (!e.relatedTarget || e.relatedTarget === document.documentElement) {
+    document.addEventListener('drop', (e) => {
+        e.preventDefault();
         dropOverlay.classList.remove('active');
-    }
-});
-
-document.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropOverlay.classList.remove('active');
-    if (e.dataTransfer?.files?.length) {
-        loadFiles(e.dataTransfer.files);
-    }
-});
-
-// ─── Prev / Next buttons ──────────────────────────────────────────────────────
-
-document.getElementById('prevBtn').addEventListener('click', () => {
-    const index = (state.selectedAlgorithmIndex - 1 + configs.length) % configs.length;
-    showCanvas(index);
-});
-
-document.getElementById('nextBtn').addEventListener('click', () => {
-    const index = (state.selectedAlgorithmIndex + 1) % configs.length;
-    showCanvas(index);
-});
-
-// ─── View switching helpers ───────────────────────────────────────────────────
-
-const ALL_VIEWS = ['ditheredView', 'sourceView', 'mappedView', 'inGammutView', 'inGammutMaskView', 'distanceView', 'edgeView'];
-let currentView = 'ditheredView';
-
-function showView(id) {
-    currentView = id;
-    ALL_VIEWS.forEach(v => document.getElementById(v).classList.toggle('hidden', v !== id));
-
-    // Lazy-render derived views only when switching to them
-    if (state.images.length === 0) return;
-    switch (id) {
-        case 'mappedView':      updateMappedView();      break;
-        case 'inGammutView':    updateInGamutView();     break;
-        case 'inGammutMaskView': updateInGamutMaskView(); break;
-        case 'distanceView':    updateDistanceView();    break;
-        case 'edgeView':        updateEdgeView();        break;
-    }
+        if (e.dataTransfer?.files?.length) {
+            loadFiles(e.dataTransfer.files);
+        }
+    });
 }
 
-function refreshCurrentView() {
-    if (state.images.length === 0) return;
-    if (currentView !== 'ditheredView' && currentView !== 'sourceView') {
-        showView(currentView);
-    }
+function setupNavigationButtons() {
+    document.getElementById('prevBtn').addEventListener('click', () => {
+        const index = (state.selectedAlgorithmIndex - 1 + configs.length) % configs.length;
+        showCanvas(index);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+        const index = (state.selectedAlgorithmIndex + 1) % configs.length;
+        showCanvas(index);
+    });
 }
 
-window.addEventListener('selectedAlgorithmChanged', () => {
-    refreshCurrentView();
-});
-
-// ─── Keyboard shortcuts ───────────────────────────────────────────────────────
-
-window.addEventListener('keydown', (e) => {
+function handleKeyDown(e) {
     if (state.images.length === 0 || e.target.tagName === 'INPUT') return;
 
     const viewShortcutKeys = new Set([' ', 'D', 'd', 'F', 'f', 'E', 'e', 'R', 'r', 'T', 't', 'S', 's']);
@@ -160,8 +131,8 @@ window.addEventListener('keydown', (e) => {
         case 'ArrowUp':
             e.preventDefault();
             if (state.currentImageIndex > 0) {
-                state.currentImageIndex      -= 1;
-                state.selectedAlgorithmIndex  = 0;
+                setCurrentImage(state.currentImageIndex - 1);
+                setSelectedAlgorithm(0);
                 renderCurrentImage();
                 updateImageList();
             }
@@ -169,8 +140,8 @@ window.addEventListener('keydown', (e) => {
         case 'ArrowDown':
             e.preventDefault();
             if (state.currentImageIndex < state.images.length - 1) {
-                state.currentImageIndex      += 1;
-                state.selectedAlgorithmIndex  = 0;
+                setCurrentImage(state.currentImageIndex + 1);
+                setSelectedAlgorithm(0);
                 renderCurrentImage();
                 updateImageList();
             }
@@ -183,11 +154,9 @@ window.addEventListener('keydown', (e) => {
             e.preventDefault();
             clearVote();
             break;
-
-        // ── Viewing modes (hold to show, release to return) ──────────────────
         case ' ':
             e.preventDefault();
-            showView('sourceView');
+            showView(VIEW_IDS.SOURCE);
             break;
         case 'S':
         case 's':
@@ -197,29 +166,28 @@ window.addEventListener('keydown', (e) => {
         case 'D':
         case 'd':
             e.preventDefault();
-            showView('distanceView');
+            showView(VIEW_IDS.DISTANCE);
             break;
         case 'F':
         case 'f':
             e.preventDefault();
-            showView('mappedView');
+            showView(VIEW_IDS.MAPPED);
             break;
         case 'E':
         case 'e':
             e.preventDefault();
-            showView('edgeView');
+            showView(VIEW_IDS.EDGE);
             break;
         case 'R':
         case 'r':
             e.preventDefault();
-            showView('inGammutView');
+            showView(VIEW_IDS.IN_GAMUT);
             break;
         case 'T':
         case 't':
             e.preventDefault();
-            showView('inGammutMaskView');
+            showView(VIEW_IDS.IN_GAMUT_MASK);
             break;
-
         default:
             if (/^[1-9]$/.test(e.key)) {
                 e.preventDefault();
@@ -227,9 +195,9 @@ window.addEventListener('keydown', (e) => {
                 if (index < configs.length) showCanvas(index);
             }
     }
-});
+}
 
-window.addEventListener('keyup', (e) => {
+function handleKeyUp(e) {
     switch (e.key) {
         case 'S':
         case 's':
@@ -248,15 +216,26 @@ window.addEventListener('keyup', (e) => {
         case 'T':
         case 't':
             e.preventDefault();
-            showView('ditheredView');
+            showView(VIEW_IDS.DITHERED);
             break;
     }
-});
+}
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
+function setupKeyboardShortcuts() {
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+}
 
-updateImageInfo();
-setupSendButtons();
+function initializeApp() {
+    setupFileInput();
+    setupDragDrop();
+    setupNavigationButtons();
+    setupKeyboardShortcuts();
+    updateImageInfo();
+    setupSendButtons();
+}
+
+initializeApp();
 
 // Load default image on page load
 window.addEventListener('load', () => {

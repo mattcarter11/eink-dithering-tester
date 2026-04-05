@@ -28,10 +28,66 @@ export function showToast(type, message) {
 const sourceCanvas      = document.getElementById('sourceCanvas');
 const srcViewCanvas     = document.querySelector('#sourceView canvas');
 const mappedCanvas      = document.querySelector('#mappedView canvas');
-const inGammutCanvas    = document.querySelector('#inGammutView canvas');
-const inGammutMaskCanvas = document.querySelector('#inGammutMaskView canvas');
+const inGamutCanvas     = document.querySelector('#inGamutView canvas');
+const inGamutMaskCanvas = document.querySelector('#inGamutMaskView canvas');
 const distanceCanvas    = document.querySelector('#distanceView canvas');
 const edgeCanvas        = document.querySelector('#edgeView canvas');
+
+export const VIEW_IDS = {
+    DITHERED: 'ditheredView',
+    SOURCE: 'sourceView',
+    MAPPED: 'mappedView',
+    IN_GAMUT: 'inGamutView',
+    IN_GAMUT_MASK: 'inGamutMaskView',
+    DISTANCE: 'distanceView',
+    EDGE: 'edgeView',
+};
+
+const ALL_VIEWS = Object.values(VIEW_IDS);
+let currentView = VIEW_IDS.DITHERED;
+
+function isImageLoaded() {
+    return state.images.length > 0;
+}
+
+function getCurrentImage() {
+    return state.images[state.currentImageIndex]?.image;
+}
+
+export function showView(viewId) {
+    if (!ALL_VIEWS.includes(viewId)) return;
+
+    currentView = viewId;
+    ALL_VIEWS.forEach((view) => document.getElementById(view).classList.toggle('hidden', view !== viewId));
+
+    if (!isImageLoaded()) return;
+
+    switch (viewId) {
+        case VIEW_IDS.MAPPED:
+            updateMappedView();
+            break;
+        case VIEW_IDS.IN_GAMUT:
+            updateInGamutView();
+            break;
+        case VIEW_IDS.IN_GAMUT_MASK:
+            updateInGamutMaskView();
+            break;
+        case VIEW_IDS.DISTANCE:
+            updateDistanceView();
+            break;
+        case VIEW_IDS.EDGE:
+            updateEdgeView();
+            break;
+    }
+}
+
+export function refreshCurrentView() {
+    if (!isImageLoaded()) return;
+    if (currentView === VIEW_IDS.DITHERED || currentView === VIEW_IDS.SOURCE) return;
+    showView(currentView);
+}
+
+window.addEventListener('selectedAlgorithmChanged', refreshCurrentView);
 
 // Redraws the source image and re-runs all dithering algorithms for the current image.
 export function renderCurrentImage() {
@@ -55,6 +111,7 @@ export function renderCurrentImage() {
     });
 
     showCanvas(state.selectedAlgorithmIndex);
+    refreshCurrentView();
     updateImageInfo();
     updateVoteIndicators();
 }
@@ -63,27 +120,27 @@ function updateSourceView() {
     srcViewCanvas.width  = DISPLAY_WIDTH;
     srcViewCanvas.height = DISPLAY_HEIGHT;
 
-    const img = state.images[state.currentImageIndex].image;
+    const img = getCurrentImage();
     drawFitImage(srcViewCanvas.getContext('2d'), img);
 }
 
 export function updateMappedView() {
-    const img = state.images[state.currentImageIndex].image;
+    const img = getCurrentImage();
     const config = configs[state.selectedAlgorithmIndex];
     processImageAndUpdateCanvas(img, config, mappedCanvas, true);
 }
 
 export function updateInGamutView() {
-    const img = state.images[state.currentImageIndex].image;
+    const img = getCurrentImage();
     const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
     const gamut = buildGamut(palette);
 
-    inGammutCanvas.width  = DISPLAY_WIDTH;
-    inGammutCanvas.height = DISPLAY_HEIGHT;
-    const ctx = inGammutCanvas.getContext('2d');
+    inGamutCanvas.width  = DISPLAY_WIDTH;
+    inGamutCanvas.height = DISPLAY_HEIGHT;
+    const ctx = inGamutCanvas.getContext('2d');
     drawFitImage(ctx, img);
 
-    const imageData = ctx.getImageData(0, 0, inGammutCanvas.width, inGammutCanvas.height);
+    const imageData = ctx.getImageData(0, 0, inGamutCanvas.width, inGamutCanvas.height);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
@@ -103,16 +160,16 @@ export function updateInGamutView() {
 
 // In-gamut mask: white = inside gamut, black = outside gamut
 export function updateInGamutMaskView() {
-    const img = state.images[state.currentImageIndex].image;
+    const img = getCurrentImage();
     const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
     const gamut = buildGamut(palette);
 
-    inGammutMaskCanvas.width  = DISPLAY_WIDTH;
-    inGammutMaskCanvas.height = DISPLAY_HEIGHT;
-    const ctx = inGammutMaskCanvas.getContext('2d');
+    inGamutMaskCanvas.width  = DISPLAY_WIDTH;
+    inGamutMaskCanvas.height = DISPLAY_HEIGHT;
+    const ctx = inGamutMaskCanvas.getContext('2d');
     drawFitImage(ctx, img);
 
-    const imageData = ctx.getImageData(0, 0, inGammutMaskCanvas.width, inGammutMaskCanvas.height);
+    const imageData = ctx.getImageData(0, 0, inGamutMaskCanvas.width, inGamutMaskCanvas.height);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
@@ -138,7 +195,7 @@ export function updateInGamutMaskView() {
 
 // Distance view: green = inside gamut, red = outside gamut, brightness indicates how close/far from gamut boundary
 export function updateDistanceView() {
-    const img = state.images[state.currentImageIndex].image;
+    const img = getCurrentImage();
     const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
     const { planes } = buildGamut(palette);
 
@@ -194,7 +251,7 @@ export function updateDistanceView() {
 
 // Edge detection using a Laplacian filter on the source image
 export function updateEdgeView() {
-    const img = state.images[state.currentImageIndex].image;
+    const img = getCurrentImage();
 
     edgeCanvas.width  = DISPLAY_WIDTH;
     edgeCanvas.height = DISPLAY_HEIGHT;

@@ -1,6 +1,6 @@
 import { configs } from "./config.js";
-import { state, castVote, deleteVote } from "./state.js";
-import { carousleThumbs } from "./canvas.js";
+import { state, castVote, deleteVote, setCurrentImage, setSelectedAlgorithm } from "./state.js";
+import { carouselThumbs } from "./canvas.js";
 import { updateImageList, updateImageInfo, renderCurrentImage } from "./ui.js";
 
 // Highlights the thumbnail that matches the current image's vote (if any).
@@ -9,7 +9,7 @@ export function updateVoteIndicators() {
 
     const votedAlgorithmName = state.votes[state.images[state.currentImageIndex].name];
 
-    Array.from(carousleThumbs.children).forEach((wrapper, index) => {
+    Array.from(carouselThumbs.children).forEach((wrapper, index) => {
         const isVoted = configs[index].name === votedAlgorithmName;
         wrapper.classList.toggle('voted-algorithm', isVoted);
         wrapper.querySelector('canvas').classList.toggle('voted-algorithm', isVoted);
@@ -30,8 +30,8 @@ export function submitVote() {
     updateImageInfo();
 
     if (state.currentImageIndex < state.images.length - 1) {
-        state.currentImageIndex      = state.currentImageIndex + 1;
-        state.selectedAlgorithmIndex = 0;
+        setCurrentImage(state.currentImageIndex + 1);
+        setSelectedAlgorithm(0);
         renderCurrentImage();
         updateImageList();
     }
