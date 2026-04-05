@@ -67,11 +67,15 @@
                 </div>
                 <div id="distanceView" class="canvas-container hidden">
                     <canvas></canvas>
-                    <p>Distance from palette (green = in-gamut, red = outside-gamut, brighter = further)</p>
+                    <p>Distance from closest palette color (green = close, red = far)</p>
                 </div>
                 <div id="edgeView" class="canvas-container hidden">
                     <canvas></canvas>
                     <p>Edge detection (Laplacian)</p>
+                </div>
+                <div id="differenceView" class="canvas-container hidden">
+                    <canvas></canvas>
+                    <p>Dithering error heatmap (red = high error, blue = low error)</p>
                 </div>
                 <button id="nextBtn">▶</button>
             </div>
@@ -107,6 +111,7 @@
                     <tr><td>S</td><td>Viewing</td><td>Show un-smoothed dithered image</td></tr>
                     <tr><td>D</td><td>Viewing</td><td>Show distance from closest palette color (pre-dithering)</td></tr>
                     <tr><td>F</td><td>Viewing</td><td>Map to closest palette color (no dithering)</td></tr>
+                    <tr><td>G</td><td>Viewing</td><td>Show dithering error heatmap</td></tr>
                     <tr><td>E</td><td>Viewing</td><td>Show edge Laplacian filter</td></tr>
                     <tr><td>R</td><td>Viewing</td><td>Show in-gamut palette pixels</td></tr>
                     <tr><td>T</td><td>Viewing</td><td>Show in-gamut mask</td></tr>

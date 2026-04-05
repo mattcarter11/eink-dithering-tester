@@ -1,10 +1,10 @@
-import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs, displaysIp } from "./config.js";
+import { DISPLAY_WIDTH, DISPLAY_HEIGHT, USE_SOURCE_SIZE, configs, displaysIp } from "./config.js";
 import { state } from "./state.js";
 import { drawFitImage, processImageAndUpdateCanvas } from "./dither.js";
 import { showCanvas, updateThumbnail } from "./canvas.js";
 import { updateVoteIndicators } from "./voting.js";
 import { hex2rgb } from "./math/space.js";
-import { buildGamut, gamutDistance } from "./math/gamut.js"
+import { buildGamut, vertexDistance } from "./math/gamut.js"
 import { getDitheredImageBin } from "./math/img2bin.js";
 import { grayNormalized, laplacianNormalized } from "./math/process.js";
 
@@ -32,6 +32,7 @@ const inGamutCanvas     = document.querySelector('#inGamutView canvas');
 const inGamutMaskCanvas = document.querySelector('#inGamutMaskView canvas');
 const distanceCanvas    = document.querySelector('#distanceView canvas');
 const edgeCanvas        = document.querySelector('#edgeView canvas');
+const differenceCanvas  = document.querySelector('#differenceView canvas');
 
 export const VIEW_IDS = {
     DITHERED: 'ditheredView',
@@ -41,6 +42,7 @@ export const VIEW_IDS = {
     IN_GAMUT_MASK: 'inGamutMaskView',
     DISTANCE: 'distanceView',
     EDGE: 'edgeView',
+    DIFFERENCE: 'differenceView',
 };
 
 const ALL_VIEWS = Object.values(VIEW_IDS);
@@ -52,6 +54,13 @@ function isImageLoaded() {
 
 function getCurrentImage() {
     return state.images[state.currentImageIndex]?.image;
+}
+
+function getCanvasSize(img) {
+    if (USE_SOURCE_SIZE) {
+        return { width: img.width, height: img.height };
+    }
+    return { width: DISPLAY_WIDTH, height: DISPLAY_HEIGHT };
 }
 
 export function showView(viewId) {
@@ -78,6 +87,9 @@ export function showView(viewId) {
         case VIEW_IDS.EDGE:
             updateEdgeView();
             break;
+        case VIEW_IDS.DIFFERENCE:
+            updateDifferenceView();
+            break;
     }
 }
 
@@ -93,12 +105,13 @@ window.addEventListener('selectedAlgorithmChanged', refreshCurrentView);
 export function renderCurrentImage() {
     if (state.images.length === 0) return;
 
-    const img = state.images[state.currentImageIndex].image;
+    const img = getCurrentImage();
     
     // Draw into the main source canvas
-    sourceCanvas.width  = DISPLAY_WIDTH;
-    sourceCanvas.height = DISPLAY_HEIGHT;
-    drawFitImage(sourceCanvas.getContext('2d'), img);
+    const { width, height } = getCanvasSize(img);
+    sourceCanvas.width  = width;
+    sourceCanvas.height = height;
+    drawFitImage(sourceCanvas.getContext('2d'), img, false, width, height);
 
     // Rebuild the source view panel (shown on spacebar hold)
     updateSourceView();
@@ -117,11 +130,11 @@ export function renderCurrentImage() {
 }
 
 function updateSourceView() {
-    srcViewCanvas.width  = DISPLAY_WIDTH;
-    srcViewCanvas.height = DISPLAY_HEIGHT;
-
     const img = getCurrentImage();
-    drawFitImage(srcViewCanvas.getContext('2d'), img);
+    const { width, height } = getCanvasSize(img);
+    srcViewCanvas.width  = width;
+    srcViewCanvas.height = height;
+    drawFitImage(srcViewCanvas.getContext('2d'), img, false, width, height);
 }
 
 export function updateMappedView() {
@@ -135,12 +148,13 @@ export function updateInGamutView() {
     const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
     const gamut = buildGamut(palette);
 
-    inGamutCanvas.width  = DISPLAY_WIDTH;
-    inGamutCanvas.height = DISPLAY_HEIGHT;
+    const { width, height } = getCanvasSize(img);
+    inGamutCanvas.width  = width;
+    inGamutCanvas.height = height;
     const ctx = inGamutCanvas.getContext('2d');
-    drawFitImage(ctx, img);
+    drawFitImage(ctx, img, false, width, height);
 
-    const imageData = ctx.getImageData(0, 0, inGamutCanvas.width, inGamutCanvas.height);
+    const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
@@ -164,12 +178,13 @@ export function updateInGamutMaskView() {
     const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
     const gamut = buildGamut(palette);
 
-    inGamutMaskCanvas.width  = DISPLAY_WIDTH;
-    inGamutMaskCanvas.height = DISPLAY_HEIGHT;
+    const { width, height } = getCanvasSize(img);
+    inGamutMaskCanvas.width  = width;
+    inGamutMaskCanvas.height = height;
     const ctx = inGamutMaskCanvas.getContext('2d');
-    drawFitImage(ctx, img);
+    drawFitImage(ctx, img, false, width, height);
 
-    const imageData = ctx.getImageData(0, 0, inGamutMaskCanvas.width, inGamutMaskCanvas.height);
+    const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 
     for (let i = 0; i < data.length; i += 4) {
@@ -193,18 +208,18 @@ export function updateInGamutMaskView() {
     ctx.putImageData(imageData, 0, 0);
 }
 
-// Distance view: green = inside gamut, red = outside gamut, brightness indicates how close/far from gamut boundary
+// Distance view: green = close to palette colors, red = far from palette colors
 export function updateDistanceView() {
     const img = getCurrentImage();
     const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
-    const { planes } = buildGamut(palette);
 
-    distanceCanvas.width  = DISPLAY_WIDTH;
-    distanceCanvas.height = DISPLAY_HEIGHT;
+    const { width, height } = getCanvasSize(img);
+    distanceCanvas.width  = width;
+    distanceCanvas.height = height;
     const ctx = distanceCanvas.getContext('2d');
-    drawFitImage(ctx, img);
+    drawFitImage(ctx, img, false, width, height);
 
-    const imageData = ctx.getImageData(0, 0, distanceCanvas.width, distanceCanvas.height);
+    const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 
     // First pass: collect all distances to find the range
@@ -215,35 +230,25 @@ export function updateDistanceView() {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
-        const dist = gamutDistance([r, g, b], planes);
+        const dist = vertexDistance([r, g, b], palette);
         distances[j] = dist;
         if (dist > maxDist) maxDist = dist;
     }
 
     // Second pass: map distance to green→red gradient
-    // Pixels inside gamut (dist <= 0): green shades, darker when closer to the gamut boundary
-    // Pixels outside gamut (dist > 0): red shades, brighter when further from the gamut boundary
+    // Smaller distance = closer to palette colors = greener
+    // Larger distance = farther from palette colors = redder
     for (let i = 0, j = 0; i < data.length; i += 4, j++) {
         const dist = distances[j];
+        const normalizedDist = maxDist > 0 ? dist / maxDist : 0;
 
-        if (dist <= 0) {
-            // Inside gamut: green channel, brightness inversely proportional to closeness
-            // dist is negative (more negative = deeper inside), 0 = on boundary
-            const closeness = maxDist > 0 ? Math.min(1, -dist / maxDist) : 0;
-            // Darker green = closer to the gamut boundary / deeper inside gamut
-            const green = Math.round(255 - closeness * 175);
-            data[i]     = 0;
-            data[i + 1] = green;
-            data[i + 2] = 0;
-        } else {
-            // Outside gamut: red channel, brightness based on how far out
-            const farness = maxDist > 0 ? Math.min(1, dist / maxDist) : 0;
-            // Brighter red = further outside gamut
-            const red = Math.round(80 + farness * 175);
-            data[i]     = red;
-            data[i + 1] = 0;
-            data[i + 2] = 0;
-        }
+        // Interpolate from green (0) to red (1)
+        const red = Math.round(normalizedDist * 255);
+        const green = Math.round((1 - normalizedDist) * 255);
+
+        data[i]     = red;
+        data[i + 1] = green;
+        data[i + 2] = 0;
     }
 
     ctx.putImageData(imageData, 0, 0);
@@ -253,17 +258,18 @@ export function updateDistanceView() {
 export function updateEdgeView() {
     const img = getCurrentImage();
 
-    edgeCanvas.width  = DISPLAY_WIDTH;
-    edgeCanvas.height = DISPLAY_HEIGHT;
+    const { width, height } = getCanvasSize(img);
+    edgeCanvas.width  = width;
+    edgeCanvas.height = height;
     const ctx = edgeCanvas.getContext('2d');
-    drawFitImage(ctx, img);
+    drawFitImage(ctx, img, false, width, height);
 
-    const imageData = ctx.getImageData(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 
     // Calculate Laplacian for edge detection
-    const gray = grayNormalized(data, DISPLAY_WIDTH, DISPLAY_HEIGHT);
-    const laplacian = laplacianNormalized(gray, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    const gray = grayNormalized(data, width, height);
+    const laplacian = laplacianNormalized(gray, width, height);
 
     // Normalize and scale to 0-255 range for visualization
     let min = Infinity, max = -Infinity;
@@ -286,6 +292,60 @@ export function updateEdgeView() {
     }
 
     ctx.putImageData(imageData, 0, 0);
+}
+
+// Dithering error heatmap: shows difference between dithered and source pixels
+export function updateDifferenceView() {
+    const img = getCurrentImage();
+    const config = configs[state.selectedAlgorithmIndex];
+
+    const { width, height } = getCanvasSize(img);
+    differenceCanvas.width  = width;
+    differenceCanvas.height = height;
+    const ctx = differenceCanvas.getContext('2d');
+
+    // Get the dithered image
+    processImageAndUpdateCanvas(img, config, differenceCanvas, false);
+
+    const ditheredData = ctx.getImageData(0, 0, width, height);
+    const ditheredPixels = ditheredData.data;
+
+    // Get the source image data
+    const sourceCtx = document.createElement('canvas').getContext('2d');
+    sourceCtx.canvas.width = width;
+    sourceCtx.canvas.height = height;
+    drawFitImage(sourceCtx, img, false, width, height);
+    const sourceData = sourceCtx.getImageData(0, 0, width, height);
+    const sourcePixels = sourceData.data;
+
+    // Calculate differences
+    const differences = new Float32Array(ditheredPixels.length / 4);
+    let maxDiff = 0;
+
+    for (let i = 0, j = 0; i < ditheredPixels.length; i += 4, j++) {
+        const dr = ditheredPixels[i] - sourcePixels[i];
+        const dg = ditheredPixels[i + 1] - sourcePixels[i + 1];
+        const db = ditheredPixels[i + 2] - sourcePixels[i + 2];
+        const diff = Math.sqrt(dr * dr + dg * dg + db * db);
+        differences[j] = diff;
+        if (diff > maxDiff) maxDiff = diff;
+    }
+
+    // Create heatmap: blue = low error, red = high error
+    for (let i = 0, j = 0; i < ditheredPixels.length; i += 4, j++) {
+        const normalizedDiff = maxDiff > 0 ? differences[j] / maxDiff : 0;
+
+        // Blue to red gradient
+        const red = Math.round(normalizedDiff * 255);
+        const blue = Math.round((1 - normalizedDiff) * 255);
+
+        ditheredPixels[i]     = red;   // R
+        ditheredPixels[i + 1] = 0;     // G
+        ditheredPixels[i + 2] = blue;  // B
+        ditheredPixels[i + 3] = 255;   // A
+    }
+
+    ctx.putImageData(ditheredData, 0, 0);
 }
 
 // Rebuilds the image list sidebar, marking the active image and any voted ones.

@@ -3,9 +3,10 @@ import { createConfig } from "./dither.js";
 
 // --- Display ---
 
-export const DISPLAY_WIDTH  = 480;
-export const DISPLAY_HEIGHT = 800;
-export const DITHER_FACTOR  = 0.85;
+export const DISPLAY_WIDTH    = 480;
+export const DISPLAY_HEIGHT   = 800;
+export const USE_SOURCE_SIZE  = true;
+export const DITHER_FACTOR    = 0.85;
 
 // --- Palettes ---
 
@@ -26,6 +27,15 @@ export const palettes = {
 }
 
 
+// --- Initial Images ---
+
+export const INITIAL_IMAGES = [
+    'test-imgs/land sized.png',
+    // 'test-imgs/land crop.png',
+    'test-imgs/land crop 2.png',
+];
+
+
 // --- Configs ---
 
 /* Notes:
@@ -36,7 +46,7 @@ export const palettes = {
 export const configs = [
 
     /* D: RGB   E: RGB */
-    createConfig(rgb, SPACE.RGB, SPACE.RGB, true),
+    createConfig(rgb, SPACE.RGB, SPACE.RGB, false),
 
     // createConfig(wenting, SPACE.RGB, SPACE.RGB),
     // createConfig(wenting, SPACE.RGB, SPACE.RGB, true),
@@ -45,23 +55,23 @@ export const configs = [
     // createConfig(full, SPACE.RGB, SPACE.RGB, true),
 
     /* D: CEILAB */
-    // createConfig(wenting, SPACE.CIELAB, SPACE.RGB), // Loss of detail because out of palette gamut pixels
-    // createConfig(wenting, SPACE.CIELAB, SPACE.lRGB), // Loss of detail because out of palette gamut pixels
-    // createConfig(wenting, SPACE.CIELAB, SPACE.CIELAB), // Loss of detail because out of palette gamut pixels
+    createConfig(wenting, SPACE.CIELAB, SPACE.RGB), 
+    createConfig(wenting, SPACE.CIELAB, SPACE.lRGB), 
+    createConfig(wenting, SPACE.CIELAB, SPACE.CIELAB), 
 
     createConfig(full, SPACE.CIELAB, SPACE.RGB), // 👑
-    // createConfig(full, SPACE.CIELAB, SPACE.lRGB), // Blue shift -> it should best from what i've read
-    // createConfig(full, SPACE.CIELAB, SPACE.CIELAB), // Blue shift
+    createConfig(full, SPACE.CIELAB, SPACE.lRGB), // Blue shift -> it should best from what i've read
+    createConfig(full, SPACE.CIELAB, SPACE.CIELAB), // Blue shift
 
 
     /* D: OKLAB */
     // createConfig(wenting, SPACE.OKLAB, SPACE.RGB),
-    createConfig(wenting, SPACE.OKLAB, SPACE.lRGB),
-    createConfig(wenting, SPACE.OKLAB, SPACE.OKLAB),
+    // createConfig(wenting, SPACE.OKLAB, SPACE.lRGB),
+    // createConfig(wenting, SPACE.OKLAB, SPACE.OKLAB),
 
     // createConfig(full, SPACE.OKLAB, SPACE.RGB),
-    createConfig(full, SPACE.OKLAB, SPACE.lRGB),
-    createConfig(full, SPACE.OKLAB, SPACE.OKLAB),
+    // createConfig(full, SPACE.OKLAB, SPACE.lRGB),
+    // createConfig(full, SPACE.OKLAB, SPACE.OKLAB),
 ];
 
 

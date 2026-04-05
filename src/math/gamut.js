@@ -88,3 +88,22 @@ export function buildGamut(palette) {
 export function gamutDistance(color, planes) {
   return Math.max(...planes.map(({ normal, d }) => dot(normal, color) + d));
 }
+
+/**
+ * Compute the Euclidean distance to the closest palette color.
+ *
+ * @param {number[]} color - [r,g,b] color to test
+ * @param {number[][]} palette - Array of [r,g,b] palette colors
+ * @returns {number} Minimum Euclidean distance to any palette color
+ */
+export function vertexDistance(color, palette) {
+  let minDist = Infinity;
+  for (const vertex of palette) {
+    const dr = color[0] - vertex[0];
+    const dg = color[1] - vertex[1];
+    const db = color[2] - vertex[2];
+    const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+    if (dist < minDist) minDist = dist;
+  }
+  return minDist;
+}
