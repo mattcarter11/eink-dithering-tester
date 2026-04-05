@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dither Algorithm Comparison</title>
-    <link rel="stylesheet" href="style.css">
+  <script type="module" crossorigin src="/assets/index-65YZeJA2.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BK0k2BdG.css">
 </head>
 <body>
     <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
@@ -63,11 +64,11 @@
                 </div>
                 <div id="inGammutMaskView" class="canvas-container hidden">
                     <canvas></canvas>
-                    <p>In-gamut mask</p>
+                    <p>In-gamut mask (white = in gamut)</p>
                 </div>
                 <div id="distanceView" class="canvas-container hidden">
                     <canvas></canvas>
-                    <p>Distance from palette (green = in-gammut, red = outside-gammut, brither = further)</p>
+                    <p>Distance from palette (green = close, red = far)</p>
                 </div>
                 <div id="edgeView" class="canvas-container hidden">
                     <canvas></canvas>
@@ -109,7 +110,7 @@
                     <tr><td>F</td><td>Viewing</td><td>Map to closest palette color (no dithering)</td></tr>
                     <tr><td>E</td><td>Viewing</td><td>Show edge Laplacian filter</td></tr>
                     <tr><td>R</td><td>Viewing</td><td>Show in-gamut palette pixels</td></tr>
-                    <tr><td>T</td><td>Viewing</td><td>Show in-gamut mask</td></tr>
+                    <tr><td>T</td><td>Viewing</td><td>Show in-gamut mask (white = in gamut)</td></tr>
                     <tr><td>Enter</td><td>Voting</td><td>Submit vote for current algorithm</td></tr>
                     <tr><td>Delete</td><td>Voting</td><td>Clear vote for current image</td></tr>
                 </tbody>
@@ -120,6 +121,5 @@
 
     <div id="toastContainer"></div>
 
-    <script type="module" src="src/main.js"></script>
 </body>
 </html>

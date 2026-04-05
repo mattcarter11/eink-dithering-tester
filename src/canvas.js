@@ -1,6 +1,5 @@
 import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
 import { state, addCanvasContainer, clearCanvasContainers, setSelectedAlgorithm } from "./state.js";
-import { updateMappedView, updateInGamutView, updateEdgeDetectionView } from "./ui.js";
 
 const carousleThumbs = document.getElementById('carouselThumbs');
 const ditheredDiv    = document.getElementById('ditheredView');
@@ -48,9 +47,8 @@ export function showCanvas(index) {
     Array.from(carousleThumbs.children).forEach((wrapper, i) => {
         wrapper.querySelector('canvas').classList.toggle('selected', i === index);
     });
-    updateMappedView();
-    updateInGamutView();
-    updateEdgeDetectionView();
+
+    window.dispatchEvent(new CustomEvent('selectedAlgorithmChanged', { detail: { index } }));
 }
 
 // Copies `sourceCanvas` into the thumbnail at `index` and updates its timing label.

@@ -57,19 +57,21 @@ The tool has three sections:
 
 ### Shorcut
 
-Key      | Usage      | Description
----------|------------|------------------------
-↑/↓      | Navigation | Navigate between images
-←/→      | Navigation | Cycle through dithering algorithms
-1–9      | Navigation | Jump directly to algorithm by number
-Escape   | Naviation  | Close modal
-Space    | Viewing    | Hold to view source image
-a/A      | Viewing    | Show in gammut palette pixels
-s/S      | Viewing    | Show un smoothed dithered image
-d/D      | Viewing    | Flat map to closest palette colors (without dithering)
-e/E      | Viewing    | Show edge detection (laplacian)
-Enter    | Votting    | Submit vote for current algorithm
-Delete   | Votting    | Clear vote for current image
+Key    | Usage      | Description
+-------|------------|------------------------
+↑/↓    | Navigation | Navigate between images
+←/→    | Navigation | Cycle through dithering algorithms
+1–9    | Navigation | Jump directly to algorithm by number
+Escape | Naviation  | Close modal
+Space  | Viewing    | Hold to view source image
+S      | Viewing    | Show un smoothed dithered image
+D      | Viewing    | Show distance from closest palette color (pre dithering)
+F      | Viewing    | Show map to closest palette color (no dithering)
+E      | Viewing    | Show edge laplacian filter
+R      | Viewing    | Show in gammut palette pixels
+T      | Viewing    | Show in gammut palette pixels maks
+Enter  | Votting    | Submit vote for current algorithm
+Delete | Votting    | Clear vote for current image
 
 ### Viewing
 

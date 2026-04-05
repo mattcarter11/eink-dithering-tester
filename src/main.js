@@ -2,14 +2,17 @@ import { configs } from "./config.js";
 import { state, resetState, addImage, sortImages } from "./state.js";
 import { initializeCanvases, showCanvas } from "./canvas.js";
 import { submitVote, clearVote, showResults, closeResults } from "./voting.js";
-import { renderCurrentImage, updateImageList, updateImageInfo, setupSendButtons, showToast } from "./ui.js";
+import {
+    renderCurrentImage, updateImageList, updateImageInfo, setupSendButtons, showToast,
+    updateMappedView, updateInGamutView, updateInGamutMaskView, updateDistanceView, updateEdgeView
+} from "./ui.js";
 
 // Expose modal controls to inline HTML handlers
-window.showResults  = showResults;
-window.closeResults = closeResults;
-window.submitVote   = submitVote;
-window.clearVote    = clearVote;
-window.showShortcuts = showShortcuts;
+window.showResults    = showResults;
+window.closeResults   = closeResults;
+window.submitVote     = submitVote;
+window.clearVote      = clearVote;
+window.showShortcuts  = showShortcuts;
 window.closeShortcuts = closeShortcuts;
 
 function showShortcuts() {
@@ -97,10 +100,44 @@ document.getElementById('nextBtn').addEventListener('click', () => {
     showCanvas(index);
 });
 
+// ─── View switching helpers ───────────────────────────────────────────────────
+
+const ALL_VIEWS = ['ditheredView', 'sourceView', 'mappedView', 'inGammutView', 'inGammutMaskView', 'distanceView', 'edgeView'];
+let currentView = 'ditheredView';
+
+function showView(id) {
+    currentView = id;
+    ALL_VIEWS.forEach(v => document.getElementById(v).classList.toggle('hidden', v !== id));
+
+    // Lazy-render derived views only when switching to them
+    if (state.images.length === 0) return;
+    switch (id) {
+        case 'mappedView':      updateMappedView();      break;
+        case 'inGammutView':    updateInGamutView();     break;
+        case 'inGammutMaskView': updateInGamutMaskView(); break;
+        case 'distanceView':    updateDistanceView();    break;
+        case 'edgeView':        updateEdgeView();        break;
+    }
+}
+
+function refreshCurrentView() {
+    if (state.images.length === 0) return;
+    if (currentView !== 'ditheredView' && currentView !== 'sourceView') {
+        showView(currentView);
+    }
+}
+
+window.addEventListener('selectedAlgorithmChanged', () => {
+    refreshCurrentView();
+});
+
 // ─── Keyboard shortcuts ───────────────────────────────────────────────────────
 
 window.addEventListener('keydown', (e) => {
     if (state.images.length === 0 || e.target.tagName === 'INPUT') return;
+
+    const viewShortcutKeys = new Set([' ', 'D', 'd', 'F', 'f', 'E', 'e', 'R', 'r', 'T', 't', 'S', 's']);
+    if (viewShortcutKeys.has(e.key) && e.repeat) return;
 
     switch (e.key) {
         case 'Escape':
@@ -146,30 +183,43 @@ window.addEventListener('keydown', (e) => {
             e.preventDefault();
             clearVote();
             break;
-        case 'A':
-        case 'a':
+
+        // ── Viewing modes (hold to show, release to return) ──────────────────
+        case ' ':
             e.preventDefault();
-            showView('inGammutView');
+            showView('sourceView');
             break;
         case 'S':
         case 's':
             e.preventDefault();
-            document.querySelectorAll('canvas').forEach(e => e.classList.add('no_smooth'));
+            document.querySelectorAll('canvas').forEach(c => c.classList.add('no_smooth'));
             break;
         case 'D':
         case 'd':
+            e.preventDefault();
+            showView('distanceView');
+            break;
+        case 'F':
+        case 'f':
             e.preventDefault();
             showView('mappedView');
             break;
         case 'E':
         case 'e':
             e.preventDefault();
-            showView('edgeDetectionView');
+            showView('edgeView');
             break;
-        case ' ':
+        case 'R':
+        case 'r':
             e.preventDefault();
-            showView('sourceView');
+            showView('inGammutView');
             break;
+        case 'T':
+        case 't':
+            e.preventDefault();
+            showView('inGammutMaskView');
+            break;
+
         default:
             if (/^[1-9]$/.test(e.key)) {
                 e.preventDefault();
@@ -184,29 +234,24 @@ window.addEventListener('keyup', (e) => {
         case 'S':
         case 's':
             e.preventDefault();
-            document.querySelectorAll('canvas').forEach(e => e.classList.remove('no_smooth'));
+            document.querySelectorAll('canvas').forEach(c => c.classList.remove('no_smooth'));
             break;
-        case 'A':
-        case 'a':
+        case ' ':
         case 'D':
         case 'd':
+        case 'F':
+        case 'f':
         case 'E':
         case 'e':
-        case ' ':
+        case 'R':
+        case 'r':
+        case 'T':
+        case 't':
             e.preventDefault();
             showView('ditheredView');
             break;
     }
 });
-
-function showView(id) {
-    document.getElementById('ditheredView').classList.add('hidden');
-    document.getElementById('sourceView').classList.add('hidden');
-    document.getElementById('mappedView').classList.add('hidden');
-    document.getElementById('inGammutView').classList.add('hidden');
-    document.getElementById('edgeDetectionView').classList.add('hidden');
-    document.getElementById(id).classList.remove('hidden');
-}
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 

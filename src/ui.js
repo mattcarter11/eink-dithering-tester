@@ -4,7 +4,7 @@ import { drawFitImage, processImageAndUpdateCanvas } from "./dither.js";
 import { showCanvas, updateThumbnail } from "./canvas.js";
 import { updateVoteIndicators } from "./voting.js";
 import { hex2rgb } from "./math/space.js";
-import { buildGamut } from "./math/gamut.js"
+import { buildGamut, gamutDistance } from "./math/gamut.js"
 import { getDitheredImageBin } from "./math/img2bin.js";
 import { grayNormalized, laplacianNormalized } from "./math/process.js";
 
@@ -25,11 +25,13 @@ export function showToast(type, message) {
     }, 3000);
 }
 
-const sourceCanvas  = document.getElementById('sourceCanvas');
-const srcViewCanvas = document.querySelector('#sourceView canvas');
-const mappedCanvas = document.querySelector('#mappedView canvas');
-const inGammutCanvas = document.querySelector('#inGammutView canvas');
-const edgeDetectionCanvas = document.querySelector('#edgeDetectionView canvas');
+const sourceCanvas      = document.getElementById('sourceCanvas');
+const srcViewCanvas     = document.querySelector('#sourceView canvas');
+const mappedCanvas      = document.querySelector('#mappedView canvas');
+const inGammutCanvas    = document.querySelector('#inGammutView canvas');
+const inGammutMaskCanvas = document.querySelector('#inGammutMaskView canvas');
+const distanceCanvas    = document.querySelector('#distanceView canvas');
+const edgeCanvas        = document.querySelector('#edgeView canvas');
 
 // Redraws the source image and re-runs all dithering algorithms for the current image.
 export function renderCurrentImage() {
@@ -55,7 +57,6 @@ export function renderCurrentImage() {
     showCanvas(state.selectedAlgorithmIndex);
     updateImageInfo();
     updateVoteIndicators();
-    updateEdgeDetectionView();
 }
 
 function updateSourceView() {
@@ -100,12 +101,104 @@ export function updateInGamutView() {
     ctx.putImageData(imageData, 0, 0);
 }
 
-export function updateEdgeDetectionView() {
+// In-gamut mask: white = inside gamut, black = outside gamut
+export function updateInGamutMaskView() {
+    const img = state.images[state.currentImageIndex].image;
+    const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
+    const gamut = buildGamut(palette);
+
+    inGammutMaskCanvas.width  = DISPLAY_WIDTH;
+    inGammutMaskCanvas.height = DISPLAY_HEIGHT;
+    const ctx = inGammutMaskCanvas.getContext('2d');
+    drawFitImage(ctx, img);
+
+    const imageData = ctx.getImageData(0, 0, inGammutMaskCanvas.width, inGammutMaskCanvas.height);
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        if (gamut.isInside([r, g, b])) {
+            // In gamut → white
+            data[i]     = 255;
+            data[i + 1] = 255;
+            data[i + 2] = 255;
+        } else {
+            // Out of gamut → black
+            data[i]     = 0;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+}
+
+// Distance view: green = inside gamut, red = outside gamut, brightness indicates how close/far from gamut boundary
+export function updateDistanceView() {
+    const img = state.images[state.currentImageIndex].image;
+    const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
+    const { planes } = buildGamut(palette);
+
+    distanceCanvas.width  = DISPLAY_WIDTH;
+    distanceCanvas.height = DISPLAY_HEIGHT;
+    const ctx = distanceCanvas.getContext('2d');
+    drawFitImage(ctx, img);
+
+    const imageData = ctx.getImageData(0, 0, distanceCanvas.width, distanceCanvas.height);
+    const data = imageData.data;
+
+    // First pass: collect all distances to find the range
+    const distances = new Float32Array(data.length / 4);
+    let maxDist = 0;
+
+    for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const dist = gamutDistance([r, g, b], planes);
+        distances[j] = dist;
+        if (dist > maxDist) maxDist = dist;
+    }
+
+    // Second pass: map distance to green→red gradient
+    // Pixels inside gamut (dist <= 0): green shades, darker when closer to the gamut boundary
+    // Pixels outside gamut (dist > 0): red shades, brighter when further from the gamut boundary
+    for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+        const dist = distances[j];
+
+        if (dist <= 0) {
+            // Inside gamut: green channel, brightness inversely proportional to closeness
+            // dist is negative (more negative = deeper inside), 0 = on boundary
+            const closeness = maxDist > 0 ? Math.min(1, -dist / maxDist) : 0;
+            // Darker green = closer to the gamut boundary / deeper inside gamut
+            const green = Math.round(255 - closeness * 175);
+            data[i]     = 0;
+            data[i + 1] = green;
+            data[i + 2] = 0;
+        } else {
+            // Outside gamut: red channel, brightness based on how far out
+            const farness = maxDist > 0 ? Math.min(1, dist / maxDist) : 0;
+            // Brighter red = further outside gamut
+            const red = Math.round(80 + farness * 175);
+            data[i]     = red;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+        }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+}
+
+// Edge detection using a Laplacian filter on the source image
+export function updateEdgeView() {
     const img = state.images[state.currentImageIndex].image;
 
-    edgeDetectionCanvas.width  = DISPLAY_WIDTH;
-    edgeDetectionCanvas.height = DISPLAY_HEIGHT;
-    const ctx = edgeDetectionCanvas.getContext('2d');
+    edgeCanvas.width  = DISPLAY_WIDTH;
+    edgeCanvas.height = DISPLAY_HEIGHT;
+    const ctx = edgeCanvas.getContext('2d');
     drawFitImage(ctx, img);
 
     const imageData = ctx.getImageData(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
