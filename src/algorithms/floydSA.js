@@ -4,7 +4,7 @@
 import { SPACE, hex2rgb } from "../math/space.js";
 import { spectra } from "../config.js";
 import { convertPalette, converPixel, closestIdx, WEIGHTS_FLOYD } from './helper.js'
-import { grayNormalized, laplacianNormalized, localStdDev, globalStdDev } from '../math/laplacian.js'
+import { grayNormalized, laplacianNormalized, localStdDev, globalStdDev } from '../math/process.js'
 
 /**
  * Calculate gain parameter K[x,y] for low contrast preservation

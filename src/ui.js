@@ -6,7 +6,7 @@ import { updateVoteIndicators } from "./voting.js";
 import { hex2rgb } from "./math/space.js";
 import { buildGamut } from "./math/gamut.js"
 import { getDitheredImageBin } from "./math/img2bin.js";
-import { grayNormalized, laplacianNormalized } from "./math/laplacian.js";
+import { grayNormalized, laplacianNormalized } from "./math/process.js";
 
 export function showToast(type, message) {
     const container = document.getElementById('toastContainer');
