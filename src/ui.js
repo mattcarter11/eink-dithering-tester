@@ -6,6 +6,7 @@ import { updateVoteIndicators } from "./voting.js";
 import { hex2rgb } from "./math/space.js";
 import { buildGamut } from "./math/gamut.js"
 import { getDitheredImageBin } from "./math/img2bin.js";
+import { grayNormalized, laplacianNormalized } from "./math/laplacian.js";
 
 export function showToast(type, message) {
     const container = document.getElementById('toastContainer');
@@ -28,6 +29,7 @@ const sourceCanvas  = document.getElementById('sourceCanvas');
 const srcViewCanvas = document.querySelector('#sourceView canvas');
 const mappedCanvas = document.querySelector('#mappedView canvas');
 const inGammutCanvas = document.querySelector('#inGammutView canvas');
+const edgeDetectionCanvas = document.querySelector('#edgeDetectionView canvas');
 
 // Redraws the source image and re-runs all dithering algorithms for the current image.
 export function renderCurrentImage() {
@@ -53,6 +55,7 @@ export function renderCurrentImage() {
     showCanvas(state.selectedAlgorithmIndex);
     updateImageInfo();
     updateVoteIndicators();
+    updateEdgeDetectionView();
 }
 
 function updateSourceView() {
@@ -92,6 +95,44 @@ export function updateInGamutView() {
             data[i + 1] = 0;
             data[i + 2] = 0;
         }
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+}
+
+export function updateEdgeDetectionView() {
+    const img = state.images[state.currentImageIndex].image;
+
+    edgeDetectionCanvas.width  = DISPLAY_WIDTH;
+    edgeDetectionCanvas.height = DISPLAY_HEIGHT;
+    const ctx = edgeDetectionCanvas.getContext('2d');
+    drawFitImage(ctx, img);
+
+    const imageData = ctx.getImageData(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    const data = imageData.data;
+
+    // Calculate Laplacian for edge detection
+    const gray = grayNormalized(data, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    const laplacian = laplacianNormalized(gray, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
+    // Normalize and scale to 0-255 range for visualization
+    let min = Infinity, max = -Infinity;
+    for (let i = 0; i < laplacian.length; i++) {
+        min = Math.min(min, laplacian[i]);
+        max = Math.max(max, laplacian[i]);
+    }
+
+    const range = max - min || 1; // Avoid division by zero
+
+    for (let i = 0; i < laplacian.length; i++) {
+        const normalized = (laplacian[i] - min) / range;
+        const value = Math.floor(normalized * 255);
+
+        const pixelIdx = i * 4;
+        data[pixelIdx]     = value; // R
+        data[pixelIdx + 1] = value; // G
+        data[pixelIdx + 2] = value; // B
+        data[pixelIdx + 3] = 255;   // A
     }
 
     ctx.putImageData(imageData, 0, 0);

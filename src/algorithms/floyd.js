@@ -69,13 +69,13 @@ export function dither(data, width, height, factor, hexPalette, errSpace, distSp
 
             // Find closest color
             const paletteIdx = closestIdx(distSpace, distPixel, distPalette);
-            const difPixel = errPalette[paletteIdx];
+            const targetPixel = errPalette[paletteIdx];
             
             // Distribute the error to the next pixels
             if (factor > 0) { 
-                const err0 = (errPixel[0] - difPixel[0]) * factor;
-                const err1 = (errPixel[1] - difPixel[1]) * factor;
-                const err2 = (errPixel[2] - difPixel[2]) * factor;
+                const err0 = (errPixel[0] - targetPixel[0]) * factor;
+                const err1 = (errPixel[1] - targetPixel[1]) * factor;
+                const err2 = (errPixel[2] - targetPixel[2]) * factor;
 
                 for (const w of WEIGHTS_FLOYD) {
                     const nx = x + w.dx;

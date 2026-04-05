@@ -61,6 +61,10 @@
                     <canvas></canvas>
                     <p>In-gammut pixels</p>
                 </div>
+                <div id="edgeDetectionView" class="canvas-container hidden">
+                    <canvas></canvas>
+                    <p>Edge detection (laplacian)</p>
+                </div>
                 <button id="nextBtn">▶</button>
             </div>
             <div id="carouselThumbs"></div>
@@ -95,6 +99,7 @@
                     <tr><td>a/A</td><td>Viewing</td><td>Show in gamut palette pixels</td></tr>
                     <tr><td>s/S</td><td>Viewing</td><td>Show un smoothed dithered image</td></tr>
                     <tr><td>d/D</td><td>Viewing</td><td>Flat map to closest palette colors (without dithering)</td></tr>
+                    <tr><td>e/E</td><td>Viewing</td><td>Show edge detection (laplacian)</td></tr>
                     <tr><td>Enter</td><td>Voting</td><td>Submit vote for current algorithm</td></tr>
                     <tr><td>Delete</td><td>Voting</td><td>Clear vote for current image</td></tr>
                 </tbody>

@@ -1,6 +1,6 @@
 import { DISPLAY_WIDTH, DISPLAY_HEIGHT, configs } from "./config.js";
 import { state, addCanvasContainer, clearCanvasContainers, setSelectedAlgorithm } from "./state.js";
-import { updateMappedView, updateInGamutView } from "./ui.js";
+import { updateMappedView, updateInGamutView, updateEdgeDetectionView } from "./ui.js";
 
 const carousleThumbs = document.getElementById('carouselThumbs');
 const ditheredDiv    = document.getElementById('ditheredView');
@@ -50,6 +50,7 @@ export function showCanvas(index) {
     });
     updateMappedView();
     updateInGamutView();
+    updateEdgeDetectionView();
 }
 
 // Copies `sourceCanvas` into the thumbnail at `index` and updates its timing label.

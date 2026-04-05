@@ -64,9 +64,10 @@ Key      | Usage      | Description
 1–9      | Navigation | Jump directly to algorithm by number
 Escape   | Naviation  | Close modal
 Space    | Viewing    | Hold to view source image
-a/a      | Viewing    | Show in gammut palette pixels
+a/A      | Viewing    | Show in gammut palette pixels
 s/S      | Viewing    | Show un smoothed dithered image
 d/D      | Viewing    | Flat map to closest palette colors (without dithering)
+e/E      | Viewing    | Show edge detection (laplacian)
 Enter    | Votting    | Submit vote for current algorithm
 Delete   | Votting    | Clear vote for current image
 

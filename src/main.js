@@ -149,7 +149,7 @@ window.addEventListener('keydown', (e) => {
         case 'A':
         case 'a':
             e.preventDefault();
-            showView('mappedView');
+            showView('inGammutView');
             break;
         case 'S':
         case 's':
@@ -159,7 +159,12 @@ window.addEventListener('keydown', (e) => {
         case 'D':
         case 'd':
             e.preventDefault();
-            showView('inGammutView');
+            showView('mappedView');
+            break;
+        case 'E':
+        case 'e':
+            e.preventDefault();
+            showView('edgeDetectionView');
             break;
         case ' ':
             e.preventDefault();
@@ -185,6 +190,8 @@ window.addEventListener('keyup', (e) => {
         case 'a':
         case 'D':
         case 'd':
+        case 'E':
+        case 'e':
         case ' ':
             e.preventDefault();
             showView('ditheredView');
@@ -197,6 +204,7 @@ function showView(id) {
     document.getElementById('sourceView').classList.add('hidden');
     document.getElementById('mappedView').classList.add('hidden');
     document.getElementById('inGammutView').classList.add('hidden');
+    document.getElementById('edgeDetectionView').classList.add('hidden');
     document.getElementById(id).classList.remove('hidden');
 }
 
@@ -207,10 +215,10 @@ setupSendButtons();
 
 // Load default image on page load
 window.addEventListener('load', () => {
-    fetch('test-imgs/rainbow_granger.png')
+    fetch('test-imgs/land sized.png')
         .then(res => res.blob())
         .then(blob => {
-            const file = new File([blob], 'rainbow_granger.png', { type: 'image/png' });
+            const file = new File([blob], 'land sized.png', { type: 'image/png' });
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             document.getElementById('fileInput').files = dataTransfer.files;
