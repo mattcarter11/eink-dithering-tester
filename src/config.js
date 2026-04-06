@@ -49,23 +49,24 @@ export const configs = [
 
     /* D: RGB   E: RGB */
     createConfig(rgb, SPACE.RGB, SPACE.RGB, true),
-    createConfig(rgb, SPACE.RGB, SPACE.lRGB, false),
+    createConfig(rgb, SPACE.RGB, SPACE.lRGB),
 
-    // createConfig(full, SPACE.RGB, SPACE.RGB) // 👑 Full is best, it has more detail (but sometimes wenting is better)
+    createConfig(full, SPACE.RGB, SPACE.RGB), // 👑 Full is best, it has more detail (but sometimes wenting is better)
+    createConfig(full, SPACE.RGB, SPACE.lRGB), // 👑 Full is best, it has more detail (but sometimes wenting is better)
 
     /* D: CEILAB */
     // createConfig(wenting, SPACE.CIELAB, SPACE.RGB), 
     // createConfig(wenting, SPACE.CIELAB, SPACE.lRGB), 
     // createConfig(wenting, SPACE.CIELAB, SPACE.CIELAB), 
 
-    // createConfig(full, SPACE.CIELAB, SPACE.RGB), // 👑
-    // createConfig(full, SPACE.CIELAB, SPACE.lRGB), // Blue shift -> it should best from what i've read
+    createConfig(full, SPACE.CIELAB, SPACE.RGB), // 👑
+    createConfig(full, SPACE.CIELAB, SPACE.lRGB), // Blue shift -> it should best from what i've read
     // createConfig(full, SPACE.CIELAB, SPACE.CIELAB), // Blue shift
 
 
     /* D: OKLAB */
     // createConfig(wenting, SPACE.OKLAB, SPACE.RGB),
-    createConfig(wenting, SPACE.OKLAB, SPACE.lRGB),
+    // createConfig(wenting, SPACE.OKLAB, SPACE.lRGB),
     // createConfig(wenting, SPACE.OKLAB, SPACE.OKLAB),
 
     // createConfig(full, SPACE.OKLAB, SPACE.RGB),

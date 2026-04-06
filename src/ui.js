@@ -3,7 +3,7 @@ import { state } from "./state.js";
 import { drawFitImage, processImageAndUpdateCanvas } from "./dither.js";
 import { showCanvas, updateThumbnail } from "./canvas.js";
 import { updateVoteIndicators } from "./voting.js";
-import { hex2rgb } from "./math/space.js";
+import { hex2rgb, hslToRgb } from "./math/space.js";
 import { buildGamut, vertexDistance } from "./math/gamut.js"
 import { getDitheredImageBin } from "./math/img2bin.js";
 import { grayNormalized, laplacianNormalized } from "./math/process.js";
@@ -208,10 +208,11 @@ export function updateInGamutMaskView() {
     ctx.putImageData(imageData, 0, 0);
 }
 
-// Distance view: green = close to palette colors, red = far from palette colors
+// Distance view: green = in gamut, red = out of gamut, saturation indicates distance
 export function updateDistanceView() {
     const img = getCurrentImage();
     const palette = configs[state.selectedAlgorithmIndex].palette.map(hex2rgb);
+    const gamut = buildGamut(palette);
 
     const { width, height } = getCanvasSize(img);
     distanceCanvas.width  = width;
@@ -222,33 +223,36 @@ export function updateDistanceView() {
     const imageData = ctx.getImageData(0, 0, width, height);
     const data = imageData.data;
 
-    // First pass: collect all distances to find the range
+    // First pass: collect distances and inGamut
     const distances = new Float32Array(data.length / 4);
+    const inGamuts = new Uint8Array(data.length / 4);
     let maxDist = 0;
 
     for (let i = 0, j = 0; i < data.length; i += 4, j++) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
+        const isIn = gamut.isInside([r, g, b]);
         const dist = vertexDistance([r, g, b], palette);
         distances[j] = dist;
+        inGamuts[j] = isIn ? 1 : 0;
         if (dist > maxDist) maxDist = dist;
     }
 
-    // Second pass: map distance to green→red gradient
-    // Smaller distance = closer to palette colors = greener
-    // Larger distance = farther from palette colors = redder
+    // Second pass: map to color
     for (let i = 0, j = 0; i < data.length; i += 4, j++) {
         const dist = distances[j];
+        const isIn = inGamuts[j];
         const normalizedDist = maxDist > 0 ? dist / maxDist : 0;
 
-        // Interpolate from green (0) to red (1)
-        const red = Math.round(normalizedDist * 255);
-        const green = Math.round((1 - normalizedDist) * 255);
+        const hue = isIn ? 120 / 360 : 0 / 360;
+        const saturation = normalizedDist;
+        const lightness = 0.5;
+        const rgb = hslToRgb(hue, saturation, lightness);
 
-        data[i]     = red;
-        data[i + 1] = green;
-        data[i + 2] = 0;
+        data[i]     = rgb[0];
+        data[i + 1] = rgb[1];
+        data[i + 2] = rgb[2];
     }
 
     ctx.putImageData(imageData, 0, 0);
