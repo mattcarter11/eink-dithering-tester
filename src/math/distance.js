@@ -11,8 +11,8 @@ export function closestCIELABIdx(pixel, palette) {
         const dB = color[2] - pixel[2];
 
         // CIELAB is not really linear, we try correting that (https://en.wikipedia.org/wiki/Color_difference)
-        //let dist = dL*dL + dA*dA + dB*dB;
-        let dist = 2 * dL*dL + dA*dA + dB*dB;
+        let dist = dL*dL + dA*dA + dB*dB;
+        //let dist = 2 * dL*dL + dA*dA + dB*dB;
         // let dist = Math.abs(dL) + Math.sqrt(dA*dA + dB*dB);
 
         if (dist < minDist) {

@@ -1,4 +1,4 @@
-import { SPACE, hex2rgb, rgb2lrgb, rgb2cielab, rgb2oklab, lrgb2cielab, lrgb2oklab } from "../math/space.js";
+import { SPACE, hex2rgb, rgb2lrgb, rgb2cielab, rgb2oklab, lrgb2cielab, lrgb2oklab, lrgb2rgb } from "../math/space.js";
 import { closestRGBIdx, closestCIELABIdx, closestOKLABIdx } from "../math/distance.js";
 
 export const WEIGHTS_FLOYD = [
@@ -31,6 +31,7 @@ export function converPixel(pixel, fromSpace, toSpace) {
             break;
         case SPACE.lRGB:
             switch (toSpace) {
+                case SPACE.RGB: lrgb2rgb(pixel[0], pixel[1], pixel[2], pixel); return;
                 case SPACE.CIELAB: lrgb2cielab(pixel[0], pixel[1], pixel[2], pixel); return;
                 case SPACE.OKLAB: lrgb2oklab(pixel[0], pixel[1], pixel[2], pixel); return;
             }

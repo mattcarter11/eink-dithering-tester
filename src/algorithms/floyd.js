@@ -54,11 +54,11 @@ export function dither(data, width, height, factor, hexPalette, errSpace, distSp
                 errPixel[1] += errBuff[eIdx+1];
                 errPixel[2] += errBuff[eIdx+2];
                 
-                if (errSpace == SPACE.lRGB) {
-                    errPixel[0] = Math.max(0, Math.min(1, errPixel[0]));
-                    errPixel[1] = Math.max(0, Math.min(1, errPixel[1]));
-                    errPixel[2] = Math.max(0, Math.min(1, errPixel[2]));
-                }
+                // if (errSpace == SPACE.lRGB) {
+                //     errPixel[0] = Math.max(0, Math.min(1, errPixel[0]));
+                //     errPixel[1] = Math.max(0, Math.min(1, errPixel[1]));
+                //     errPixel[2] = Math.max(0, Math.min(1, errPixel[2]));
+                // }
             }
 
             // Calculate pixel for distance calculation (including error)

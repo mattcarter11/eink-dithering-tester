@@ -46,6 +46,19 @@ export function rgb2lrgb(r, g, b, out) {
 }
 
 
+export function lrgb2v(value) {
+    return value <= 0.0031308
+        ? Math.round(value * 12.92 * 255)
+        : Math.round((1.055 * Math.pow(value, 1/2.4) - 0.055) * 255);
+}
+
+export function lrgb2rgb(r, g, b, out) {
+    out[0] = lrgb2v(r);
+    out[1] = lrgb2v(g);
+    out[2] = lrgb2v(b);
+}
+
+
 
 const xn = 0.95047, yn = 1.0, zn = 1.08883; // D65 white point standard illumination
 //const xn = 0.964212, yn = 1.0, zn = 0.825188 // D50 white point printed media
